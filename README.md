@@ -2,7 +2,7 @@
 
 Türkiye odaklı, statik ve bağımlılıksız haber sitesi. `node derle.mjs` komutu `icerik/` klasöründeki haberlerden `yayin/` klasörüne hazır HTML üretir. `sh yayinla.sh` siteyi derleyip `gh-pages` dalına gönderir; GitHub Pages siteyi bu daldan yayınlar.
 
-Adres: https://busahin.com/the-country-observer/
+Adres: https://haber.busahin.com/
 
 ## Haber eklemek
 
@@ -67,7 +67,7 @@ python3 -m venv .onbellek/ses-ortami
 
 ## Alt alan adına geçiş
 
-Hedef adres: `https://haber.busahin.com/`. DNS tamamlanana kadar mevcut site `https://busahin.com/the-country-observer/` adresinde çalışmaya devam eder.
+Yayın adresi `https://haber.busahin.com/`. GitHub Pages özel alanı ve HTTPS zorlaması etkin; Cloudflare'daki `haber` CNAME kaydı yalnızca DNS modunda `busahinku.github.io` hedefine gider.
 
 Cloudflare'da gereken kayıt:
 
@@ -75,7 +75,7 @@ Cloudflare'da gereken kayıt:
 | --- | --- | --- | --- |
 | CNAME | haber | busahinku.github.io | Yalnızca DNS |
 
-GitHub Pages hedefi depo adını veya bir URL yolunu içermez. `country.busahin.com` tercih edilirse kayıt adı `country` olur.
+GitHub Pages hedefi depo adını veya bir URL yolunu içermez.
 
 Geçişi tamamlamak için:
 
@@ -83,7 +83,7 @@ Geçişi tamamlamak için:
 sh yayinla.sh --alan-adi haber.busahin.com
 ```
 
-Bu komut kalıcı `yayin-ayarlari.json` dosyasını günceller, kök dizinden çalışan siteyi derler, canonical/RSS/site haritası/paylaşım adreslerini aynı alan adına geçirir, `CNAME` dosyası oluşturur ve GitHub Pages ayarını günceller. Sertifika hazır olduktan sonra Pages ayarlarından HTTPS zorlaması açılabilir.
+Bu komut kalıcı `yayin-ayarlari.json` dosyasını günceller, kök dizinden çalışan siteyi derler, canonical/RSS/site haritası/paylaşım adreslerini aynı alan adına geçirir, `CNAME` dosyası oluşturur ve GitHub Pages ayarını günceller.
 
 Kaynak: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 
@@ -93,15 +93,15 @@ Stil ve etkileşim dosyaları tüm sayfalarda ortak ve içerik sürümüyle önb
 
 Ana sayfada ons altın, ons gümüş, dolar/TL ve avro/TL şeridi vardır. `piyasalar/` sayfasında metaller için son işlem fiyatı ile 1 gün, 1 hafta ve 1 ay grafikleri; döviz için günlük referans kuru ile haftalık ve aylık kapanış grafikleri görünür. Dövizin gün içi grafiği kaynaktaki ücretsiz akışta bulunmadığı için kapalıdır. Altın ve gümüş verisi Standard Bullion, döviz güncel referansları ExchangeRate-API, geçmiş döviz kapanışları Frankfurter üzerinden tarayıcıda alınır. Değerler kaynak saatleriyle birlikte gösterilir; fiyat akışı kesilirse uydurma değer basılmaz. Üçüncü taraf verilerin doğruluğu ve sürekliliği kaynaklara bağlıdır.
 
-Soru kutusu, sunucu ayarlanana kadar arşivde ilgili haberleri ve kaynak bağlantılarını bulur. OpenAI tabanlı yanıtı etkinleştirmek için `araclar/yardim-worker.mjs` ve `araclar/wrangler.jsonc` içindeki Cloudflare Worker hazırlanmıştır. Bu uç nokta yayımlanmış haberlerden sabit bir arşiv çeker; ziyaretçi bir URL, sistem talimatı, araç veya bağlam gönderemez. İstek boyutu ve yanıt uzunluğu sınırlanır, ziyaretçi ve tüm site için hız sınırı uygulanır. Yanıt düz metindir ve kaynak haber bağlantıları ayrıca eklenir. Hiçbir istem enjeksiyonu savunması kusursuz değildir; modelin araç ve kod çalıştırma yetkisi bulunmaz.
+Soru kutusu, hizmete bağlanmadığında arşivde ilgili haberleri ve kaynak bağlantılarını bulur. OpenAI tabanlı yanıt için `araclar/yardim-worker.mjs` ve `araclar/wrangler.jsonc` içindeki Cloudflare Worker `https://yardim.busahin.com/` alanında çalışır. Bu uç nokta yayımlanmış haberlerden sabit bir arşiv çeker; ziyaretçi bir URL, sistem talimatı, araç veya bağlam gönderemez. İstek boyutu ve yanıt uzunluğu sınırlanır, ziyaretçi ve tüm site için hız sınırı uygulanır. Yanıt düz metindir ve kaynak haber bağlantıları ayrıca eklenir. Hiçbir istem enjeksiyonu savunması kusursuz değildir; modelin araç ve kod çalıştırma yetkisi bulunmaz.
 
-Cloudflare hesabında Worker oluşturulup OpenAI anahtarı yalnızca `OPENAI_API_KEY` gizlisi olarak kaydedilmelidir. Anahtar hiçbir HTML, JavaScript, GitHub dosyası veya `yayin-ayarlari.json` içine yazılmamalıdır. Worker `gpt-5-nano` ve saklamasız yanıt kullanır; bu modelin erişimi ve fiyatı OpenAI hesabının durumuna bağlıdır. Etkinleştirme adımları:
+Cloudflare hesabındaki `country-observer-yardim` Worker'ında OpenAI anahtarı yalnızca `OPENAI_API_KEY` gizlisi olarak kaydedilmiştir. Anahtar hiçbir HTML, JavaScript, GitHub dosyası veya `yayin-ayarlari.json` içine yazılmamalıdır. Worker `gpt-5-nano` ve saklamasız yanıt kullanır; bu modelin erişimi ve fiyatı OpenAI hesabının durumuna bağlıdır. Yeniden dağıtım komutları:
 
 ```sh
 npx wrangler secret put OPENAI_API_KEY --config araclar/wrangler.jsonc
 npx wrangler deploy --config araclar/wrangler.jsonc
 ```
 
-Dağıtımdan gelen Worker adresi `yayin-ayarlari.json` içindeki `yardim_adresi` alanına yazılıp `sh yayinla.sh` çalıştırılır. Özel alan adına geçilirse Worker'ın `SITE_ORIGIN` ve `SITE_URL` değişkenleri de yeni adrese güncellenir. Anahtar olmadan soru kutusu yalnızca arşiv araması yapar.
+Worker adresi `yayin-ayarlari.json` içindeki `yardim_adresi` alanında tutulur. Yeni dağıtımlarda `SITE_ORIGIN` ve `SITE_URL` değişkenleri `haber.busahin.com` değerini korumalıdır. Anahtar olmadan soru kutusu yalnızca arşiv araması yapar.
 
 Ses kayıtları hâlihazırda ücretsiz Edge sinirsel sesinden üretilmiştir. Daha doğal Türkçe anlatım için açık lisanslı FreyaTTS denenebilir; 183 milyon parametreli yerel modelin tüm 100 haber için üretilmesi zaman ve yaklaşık gigabayt ölçeğinde model indirmesi gerektirir. ElevenLabs ücretsiz planı aylık 10 bin krediyle sınırlıdır ve ticari kullanım lisansı içermez. Google Cloud'un deneme kredisi bir seçenek olabilir ancak Cloud hesabı ve kimlik bilgileri gerekir.
