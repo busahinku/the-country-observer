@@ -54,22 +54,81 @@
   const kacis = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function aramaHazirla() {
     if (dizin) return;
-    dizin = fetch(`${TABAN}/ara.json`).then(y => y.json()).then(l => l.map(h => ({ ...h, n: normal(`${h.b} ${h.s} ${h.k} ${h.e}`) })));
+    dizin = fetch(`${TABAN}/ara.json`).then(y => y.json()).then(l => {
+      $('[data-arama-sayi]').textContent = `${l.length} haber`;
+      return l.map(h => {
+        const baslik = normal(h.b);
+        const govde = normal(`${h.b} ${h.s} ${h.k} ${h.e}`);
+        return { ...h, baslik, sozcukler: govde.split(/[^a-z0-9]+/).filter(Boolean) };
+      });
+    }).catch(() => { sonucAlani.innerHTML = '<p class="arama-bos">Arşiv şu anda yüklenemedi. Biraz sonra yeniden deneyin.</p>'; return []; });
   }
+  $$('[data-arama-oneri]').forEach(d => d.addEventListener('click', () => { const g = $('#arama-girdi'); g.value = d.dataset.aramaOneri; g.dispatchEvent(new Event('input')); g.focus(); }));
   $('#arama-girdi')?.addEventListener('input', async e => {
     const deger = e.target.value;
     const sorgu = normal(deger.trim());
-    if (sorgu.length < 2) { sonucAlani.innerHTML = '<p class="arama-bos">Aramak istediğiniz kelimeyi yazın. Örneğin: enflasyon, Merkez Bankası, milli takım.</p>'; return; }
+    if (sorgu.length < 2) { sonucAlani.innerHTML = '<p class="arama-bos">Bir başlık, kişi ya da konu yazın. Sonuçlar yazdıkça görünür.</p>'; return; }
     const kelimeler = sorgu.split(/\s+/);
-    const liste = (await dizin).filter(h => kelimeler.every(k => h.n.includes(k))).slice(0, 20);
+    const liste = (await dizin).filter(h => kelimeler.every(k => h.sozcukler.some(x => x === k || k.length >= 7 && x.startsWith(k))))
+      .sort((a, b) => kelimeler.filter(k => b.baslik.split(/[^a-z0-9]+/).includes(k)).length - kelimeler.filter(k => a.baslik.split(/[^a-z0-9]+/).includes(k)).length)
+      .slice(0, 20);
     if (e.target.value !== deger) return;
     sonucAlani.innerHTML = liste.length
-      ? liste.map(h => `<a class="sonuc" href="${h.u}">${h.g ? `<img src="${h.g}" alt="" loading="lazy">` : '<span class="gorsel-yok"></span>'}<span><span class="sonuc-kategori">${kacis(h.k)}</span><span class="sonuc-baslik">${kacis(h.b)}</span></span></a>`).join('')
+      ? liste.map(h => `<a class="sonuc" href="${h.u}">${h.g ? `<img src="${h.g}" alt="" loading="lazy">` : '<span class="gorsel-yok"></span>'}<span><span class="sonuc-kategori">${kacis(h.k)} · ${new Intl.DateTimeFormat('tr-TR', { day:'numeric',month:'short' }).format(new Date(h.t))}</span><span class="sonuc-baslik">${kacis(h.b)}</span></span></a>`).join('')
       : `<p class="arama-bos">“${kacis(e.target.value)}” için sonuç bulunamadı. Daha kısa ya da farklı bir kelime deneyin.</p>`;
   });
   $('.arama-form')?.addEventListener('submit', e => {
     const ilk = $('.sonuc', sonucAlani);
     if (ilk) { e.preventDefault(); location.href = ilk.href; }
+  });
+
+  // Arşiv soruları. Sunucu adresi tanımlanınca yanıtı güvenli uç nokta üretir;
+  // o zamana kadar doğrulanabilir haber eşleşmelerini gösterir.
+  const soruPanel = $('#soru-panel'), soruAc = $('[data-soru-ac]');
+  const soruKapat = () => { soruPanel.hidden = true; soruAc.setAttribute('aria-expanded', 'false'); soruAc.focus(); };
+  soruAc?.addEventListener('click', () => {
+    soruPanel.hidden = !soruPanel.hidden;
+    soruAc.setAttribute('aria-expanded', String(!soruPanel.hidden));
+    if (!soruPanel.hidden) $('#soru-girdi').focus();
+  });
+  if (soruPanel && $('.alt-alan')) new IntersectionObserver(([g]) => {
+    $('.soru-kutusu').classList.toggle('alt-gorunur', g.isIntersecting && soruPanel.hidden);
+  }, { threshold: .1 }).observe($('.alt-alan'));
+  $('[data-soru-kapat]')?.addEventListener('click', soruKapat);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && soruPanel && !soruPanel.hidden) soruKapat(); });
+  function mesajEkle(metin, tur = 'yanit', baglar = []) {
+    const kutu = document.createElement('div');
+    kutu.className = `soru-mesaj ${tur}`;
+    kutu.textContent = metin;
+    for (const b of baglar) {
+      if (!b.url?.startsWith(location.origin + TABAN + '/haber/')) continue;
+      const a = document.createElement('a'); a.href = b.url; a.textContent = b.baslik; kutu.append(a);
+    }
+    $('.soru-mesajlar').append(kutu);
+    kutu.scrollIntoView({ block: 'nearest', behavior: azHareket ? 'instant' : 'smooth' });
+  }
+  $('.soru-form')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const g = $('#soru-girdi'), dugme = $('.soru-form button');
+    const soru = g.value.trim(); if (!soru || soru.length > 350) return;
+    g.value = ''; dugme.disabled = true; mesajEkle(soru, 'kullanici');
+    try {
+      const adres = document.body.dataset.yardim;
+      if (adres) {
+        const y = await fetch(adres, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ soru, haber: document.body.dataset.haber || null }), signal: AbortSignal.timeout(16000) });
+        const cevap = await y.json();
+        if (!y.ok) throw new Error(cevap.hata || 'Yanıt alınamadı. Lütfen tekrar deneyin.');
+        mesajEkle(cevap.yanit, 'yanit', cevap.baglar || []);
+      } else {
+        const liste = await (aramaHazirla(), dizin);
+        const parcalar = normal(soru).split(/\W+/).filter(x => x.length > 2 && !['nedir','nasil','hangi','haber','hakkinda','ilgili','bugun','son'].includes(x));
+        const haber = document.body.dataset.haber;
+        const bulunan = liste.map(h => ({ ...h, puan: (haber && h.u.includes(`/haber/${haber}/`) ? 4 : 0) + parcalar.reduce((n, x) => n + (h.baslik.split(/[^a-z0-9]+/).includes(x) ? 3 : h.sozcukler.includes(x) ? 1 : 0), 0) })).filter(h => h.puan > 0).sort((a, b) => b.puan - a.puan).slice(0, 3);
+        if (bulunan.length) mesajEkle('Arşivimizde bu konuyla ilişkili haberler var. Ayrıntı ve kaynaklar için haberleri açın:', 'yanit', bulunan.map(h => ({ baslik: h.b, url: new URL(h.u, location.origin).href })));
+        else mesajEkle('Bu soruya dayanak oluşturacak bir haber bulamadım. Başlık, kişi veya konuyu başka sözcüklerle sorabilirsiniz.');
+      }
+    } catch (hata) { mesajEkle(hata.message || 'Yanıt alınamadı. Lütfen tekrar deneyin.'); }
+    finally { dugme.disabled = false; g.focus(); }
   });
 
   // Kopyala

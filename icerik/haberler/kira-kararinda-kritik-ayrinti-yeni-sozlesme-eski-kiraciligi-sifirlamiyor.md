@@ -5,6 +5,7 @@ kategori: analiz
 yazar: Haber Merkezi
 tarih: 2026-10-03T12:13:44.000Z
 bicim: analiz
+vitrin: haftanin
 etiketler: []
 gorsel_sorgu: Istanbul architecture
 gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.

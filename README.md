@@ -88,3 +88,20 @@ Bu komut kalıcı `yayin-ayarlari.json` dosyasını günceller, kök dizinden ç
 Kaynak: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 
 Stil ve etkileşim dosyaları tüm sayfalarda ortak ve içerik sürümüyle önbelleklenir. Yazı tipleri yereldir; fotoğraflar duyarlı boyutlarda WebP'dir. Üst menü ve alt alan sayfa geçişinin solma/yükselme animasyonuna katılmaz. Hareket azaltma tercihi desteklenir; büyük ilk harf destekleyen tarayıcılarda iki satıra yerleşir.
+
+## Piyasa verileri ve soru kutusu
+
+Ana sayfada ons altın, ons gümüş, dolar/TL ve avro/TL şeridi vardır. `piyasalar/` sayfasında metaller için son işlem fiyatı ile 1 gün, 1 hafta ve 1 ay grafikleri; döviz için günlük referans kuru ile haftalık ve aylık kapanış grafikleri görünür. Dövizin gün içi grafiği kaynaktaki ücretsiz akışta bulunmadığı için kapalıdır. Altın ve gümüş verisi Standard Bullion, döviz güncel referansları ExchangeRate-API, geçmiş döviz kapanışları Frankfurter üzerinden tarayıcıda alınır. Değerler kaynak saatleriyle birlikte gösterilir; fiyat akışı kesilirse uydurma değer basılmaz. Üçüncü taraf verilerin doğruluğu ve sürekliliği kaynaklara bağlıdır.
+
+Soru kutusu, sunucu ayarlanana kadar arşivde ilgili haberleri ve kaynak bağlantılarını bulur. OpenAI tabanlı yanıtı etkinleştirmek için `araclar/yardim-worker.mjs` ve `araclar/wrangler.jsonc` içindeki Cloudflare Worker hazırlanmıştır. Bu uç nokta yayımlanmış haberlerden sabit bir arşiv çeker; ziyaretçi bir URL, sistem talimatı, araç veya bağlam gönderemez. İstek boyutu ve yanıt uzunluğu sınırlanır, ziyaretçi ve tüm site için hız sınırı uygulanır. Yanıt düz metindir ve kaynak haber bağlantıları ayrıca eklenir. Hiçbir istem enjeksiyonu savunması kusursuz değildir; modelin araç ve kod çalıştırma yetkisi bulunmaz.
+
+Cloudflare hesabında Worker oluşturulup OpenAI anahtarı yalnızca `OPENAI_API_KEY` gizlisi olarak kaydedilmelidir. Anahtar hiçbir HTML, JavaScript, GitHub dosyası veya `yayin-ayarlari.json` içine yazılmamalıdır. Worker `gpt-5-nano` ve saklamasız yanıt kullanır; bu modelin erişimi ve fiyatı OpenAI hesabının durumuna bağlıdır. Etkinleştirme adımları:
+
+```sh
+npx wrangler secret put OPENAI_API_KEY --config araclar/wrangler.jsonc
+npx wrangler deploy --config araclar/wrangler.jsonc
+```
+
+Dağıtımdan gelen Worker adresi `yayin-ayarlari.json` içindeki `yardim_adresi` alanına yazılıp `sh yayinla.sh` çalıştırılır. Özel alan adına geçilirse Worker'ın `SITE_ORIGIN` ve `SITE_URL` değişkenleri de yeni adrese güncellenir. Anahtar olmadan soru kutusu yalnızca arşiv araması yapar.
+
+Ses kayıtları hâlihazırda ücretsiz Edge sinirsel sesinden üretilmiştir. Daha doğal Türkçe anlatım için açık lisanslı FreyaTTS denenebilir; 183 milyon parametreli yerel modelin tüm 100 haber için üretilmesi zaman ve yaklaşık gigabayt ölçeğinde model indirmesi gerektirir. ElevenLabs ücretsiz planı aylık 10 bin krediyle sınırlıdır ve ticari kullanım lisansı içermez. Google Cloud'un deneme kredisi bir seçenek olabilir ancak Cloud hesabı ve kimlik bilgileri gerekir.

@@ -11,6 +11,7 @@ const OZEL_ALAN = process.env.OZEL_ALAN_ADI ?? YAYIN_AYARLARI.ozel_alan_adi ?? '
 const CIKTI = process.env.CIKTI_DIZIN ?? 'yayin';
 const ICERIK = process.env.ICERIK_DIZIN ?? 'icerik';
 const SITE_ADI = 'The Country Observer';
+const YARDIM_ADRESI = process.env.YARDIM_ADRESI ?? YAYIN_AYARLARI.yardim_adresi ?? '';
 
 export const KATEGORILER = {
   gundem: 'Gündem', politika: 'Politika', ekonomi: 'Ekonomi', dunya: 'Dünya', spor: 'Spor',
@@ -152,7 +153,7 @@ const altAlan = () => `<footer class="alt-alan">
     <nav class="alt-nav" aria-label="Alt menü">
       <div><h2>Bölümler</h2><ul>${Object.entries(KATEGORILER).slice(0, 5).map(([k, ad]) => `<li><a href="${u(`/kategori/${k}/`)}">${ad}</a></li>`).join('')}</ul></div>
       <div><h2>Daha fazla</h2><ul>${Object.entries(KATEGORILER).slice(5).map(([k, ad]) => `<li><a href="${u(`/kategori/${k}/`)}">${ad}</a></li>`).join('')}</ul></div>
-      <div><h2>Gazete</h2><ul><li><a href="${u('/hakkimizda/')}">Hakkımızda</a></li><li><a href="${u('/hakkimizda/#yayin-ilkeleri')}">Yayın ilkeleri</a></li><li><a href="${u('/rss.xml')}">RSS akışı</a></li></ul></div>
+      <div><h2>Gazete</h2><ul><li><a href="${u('/piyasalar/')}">Piyasalar</a></li><li><a href="${u('/hakkimizda/')}">Hakkımızda</a></li><li><a href="${u('/hakkimizda/#yayin-ilkeleri')}">Yayın ilkeleri</a></li><li><a href="${u('/rss.xml')}">RSS akışı</a></li></ul></div>
     </nav>
   </div>
   <div class="kap alt-son"><p>© ${new Date().getFullYear()} The Country Observer. Fotoğraflar, künyelerinde belirtilen açık lisanslarla kullanılmaktadır.</p></div>
@@ -165,7 +166,9 @@ const pencereler = () => `<dialog class="pencere arama-pencere" id="arama" aria-
     <input id="arama-girdi" type="search" placeholder="Haber, kişi ya da konu arayın" autocomplete="off" enterkeyhint="search">
     <button class="ikon-dugme" value="kapat" aria-label="Aramayı kapat">${ikon('x')}</button>
   </form>
-  <div class="arama-sonuc" aria-live="polite"><p class="arama-bos">Aramak istediğiniz kelimeyi yazın. Örneğin: enflasyon, Merkez Bankası, milli takım.</p></div>
+  <div class="arama-ipuclari"><span>Arşivde ara</span><span data-arama-sayi>100 haber</span></div>
+  <div class="arama-oneriler" aria-label="Önerilen aramalar"><button type="button" data-arama-oneri="ekonomi">Ekonomi</button><button type="button" data-arama-oneri="İstanbul">İstanbul</button><button type="button" data-arama-oneri="spor">Spor</button></div>
+  <div class="arama-sonuc" aria-live="polite"><p class="arama-bos">Bir başlık, kişi ya da konu yazın. Sonuçlar yazdıkça görünür.</p></div>
 </dialog>
 <dialog class="pencere menu-pencere" id="menu" aria-label="Menü">
   <div class="menu-ust"><span class="logo">The Country Observer</span><form method="dialog"><button class="ikon-dugme" aria-label="Menüyü kapat">${ikon('x')}</button></form></div>
@@ -208,7 +211,7 @@ ${onYukle}
 <script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"${TABAN}/*"},{"not":{"href_matches":"${TABAN}/*.xml"}}]},"eagerness":"moderate"}]}</script>
 ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>` : ''}
 </head>
-<body data-taban="${TABAN}">
+<body data-taban="${TABAN}" data-yardim="${kacis(YARDIM_ADRESI)}" data-haber="${yol.startsWith('/haber/') ? kacis(yol.split('/')[2]) : ''}">
 ${SPRITE}
 <a class="atla" href="#icerik">İçeriğe geç</a>
 ${yapiskanCubuk(aktif)}
@@ -217,8 +220,19 @@ ${koyu ? '' : ustAlan(false, aktif)}
 ${icerik}
 </main>
 ${altAlan()}
+<aside class="soru-kutusu" aria-label="Haberler hakkında soru sor">
+  <section class="soru-panel" id="soru-panel" hidden aria-label="Haber asistanı">
+    <div class="soru-ust"><div><span class="soru-kicker">THE COUNTRY OBSERVER</span><h2>Gündemi sorun</h2></div><button class="ikon-dugme" data-soru-kapat aria-label="Soru kutusunu kapat">${ikon('x')}</button></div>
+    <p class="soru-aciklama">${YARDIM_ADRESI ? (yol.startsWith('/haber/') ? 'Bu haberin ayrıntılarını sorun; yanıtlar haber metnine dayanır.' : 'Yayımlanan haberlerimizde bir konu ya da gelişme arayın.') : 'Şimdilik arşivdeki ilgili haberleri bulur; kaynak bağlantılarını gösterir.'}</p>
+    <div class="soru-mesajlar" role="log" aria-live="polite"></div>
+    <form class="soru-form"><label class="gizli" for="soru-girdi">Sorunuz</label><input id="soru-girdi" name="soru" maxlength="350" placeholder="Gündemle ilgili bir soru sorun" autocomplete="off" required><button type="submit" aria-label="Soruyu gönder">${ikon('arrow-up-right')}</button></form>
+    <p class="soru-not">Yanıtlar hata içerebilir; haberin kaynaklarını da inceleyin.</p>
+  </section>
+  <button class="soru-ac" type="button" data-soru-ac aria-expanded="false" aria-controls="soru-panel"><span class="soru-ac-ikon">?</span><span>${yol.startsWith('/haber/') ? 'Bu haberi sor' : 'Gündemi sor'}</span>${ikon('arrow-up-right')}</button>
+</aside>
 ${pencereler()}
 <script src="${u(`/site.js?v=${VARLIK_SURUM}`)}" defer></script>
+${yol === '/' || yol === '/piyasalar/' ? `<script src="${u(`/piyasa.js?v=${VARLIK_SURUM}`)}" defer></script>` : ''}
 </body>
 </html>`;
 }
@@ -284,6 +298,12 @@ function anaSayfa(haberler) {
 
   const kartSatiri = (baslik, liste, bag) => `<section class="kap bolum">${bolumBasi(baslik, bag)}
   <div class="izgara-4">${liste.map(h => kart(h, '(max-width: 640px) 100px, (max-width: 1024px) 50vw, 25vw')).join('')}</div></section>`;
+  const piyasaSeridi = `<section class="kap piyasa-seridi" aria-label="Piyasalardan son veriler">
+    <div class="piyasa-seridi-bas"><span>PİYASALAR</span><a href="${u('/piyasalar/')}">Ayrıntılı görünüm ${ikon('arrow-up-right')}</a></div>
+    <div class="piyasa-seridi-grid">
+      ${[['altin','Ons altın','USD / ons'],['gumus','Ons gümüş','USD / ons'],['dolar','Dolar / TL','Günlük kur'],['avro','Avro / TL','Günlük kur']].map(([id,ad,birim]) => `<a class="piyasa-ozet" href="${u(`/piyasalar/#${id}`)}" data-piyasa-ozet="${id}"><span class="piyasa-ozet-ad">${ad}</span><strong>—</strong><span class="piyasa-ozet-alt">${birim}</span></a>`).join('')}
+    </div><p class="piyasa-seridi-not" data-piyasa-zaman>Veriler yükleniyor…</p>
+  </section>`;
   const sonHtml = son.length ? kartSatiri('Son Haberler', son, '/haberler/') : '';
 
   const haftaninHtml = haftanin ? `<section class="kap bolum">${bolumBasi('Haftanın Haberi')}
@@ -320,8 +340,28 @@ function anaSayfa(haberler) {
   return sayfa({
     yol: '/', koyu: true, onYukle, gorselYolu: `/gorseller/${ilk.gorsel.id}-1600.webp`,
     aciklama: "Türkiye ve dünyadan son dakika gelişmeleri, ekonomi, politika, spor ve kültür haberleri. Birden fazla kaynaktan doğrulanmış, sade ve ayrıntılı haberler.",
-    icerik: mansetHtml + trendHtml + sonHtml + haftaninHtml + analizHtml + satirHtml,
+    icerik: mansetHtml + trendHtml + piyasaSeridi + sonHtml + haftaninHtml + analizHtml + satirHtml,
     jsonld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_ADI, url: tamAdres('/'), inLanguage: 'tr-TR' },
+  });
+}
+
+function piyasalarSayfasi() {
+  return sayfa({
+    baslik: 'Piyasalar', aciklama: 'Altın, gümüş, dolar ve avro fiyatları. Kaynağı ve güncellenme zamanı görünen piyasa verileri.', yol: '/piyasalar/',
+    icerik: `<section class="kap piyasa-sayfa">
+      <div class="piyasa-kunye"><span>EKONOMİ / VERİ MASASI</span><span data-piyasa-zaman>Veriler yükleniyor…</span></div>
+      <h1>Piyasalar</h1><p class="piyasa-giris">Değişen fiyatları, verinin geldiği yeri ve son güncellenme zamanını bir arada izleyin.</p>
+      <div class="piyasa-secim" role="group" aria-label="İzlenecek varlık">
+        ${[['altin','Ons altın'],['gumus','Ons gümüş'],['dolar','Dolar / TL'],['avro','Avro / TL']].map(([id,ad]) => `<button type="button" data-piyasa-sec="${id}" aria-pressed="${id === 'altin'}">${ad}</button>`).join('')}
+      </div>
+      <div class="piyasa-kart">
+        <div class="piyasa-kart-ust"><div><span data-piyasa-ad>Ons altın</span><strong data-piyasa-deger>—</strong><span class="piyasa-degisim" data-piyasa-degisim>Veri bekleniyor</span></div><div class="piyasa-aralik" role="group" aria-label="Grafik aralığı"><button type="button" data-piyasa-aralik="24h" aria-pressed="true">1 gün</button><button type="button" data-piyasa-aralik="7d">1 hafta</button><button type="button" data-piyasa-aralik="1m">1 ay</button></div></div>
+        <div class="piyasa-cizim" data-piyasa-cizim role="img" aria-label="Seçilen piyasa verisinin zaman içindeki değişimi"><p>Grafik yükleniyor…</p></div>
+        <div class="piyasa-cizim-alt"><span data-piyasa-ilk></span><span data-piyasa-son></span></div>
+        <dl class="piyasa-olculer"><div><dt>Gün açılışı</dt><dd data-piyasa-acilis>—</dd></div><div><dt>Alış</dt><dd data-piyasa-alis>—</dd></div><div><dt>1 haftalık değişim</dt><dd data-piyasa-hafta>—</dd></div><div><dt>1 aylık değişim</dt><dd data-piyasa-ay>—</dd></div></dl>
+      </div>
+      <div class="piyasa-acik"><div><h2>Veri hakkında</h2><p>Altın ve gümüş fiyatları ons başına ABD doları cinsinden gösterilir. Bunlar uluslararası spot fiyatlarla aynı olmak zorunda olmayan işlemci alış fiyatlarıdır. Döviz kurları günlük referans verisidir; banka alış veya satış fiyatı değildir. Piyasalar kapalıyken son açıklanan değer görünür.</p></div><div><h2>Kaynaklar</h2><p>Değerli metaller: <a href="https://standardbullion.com/gold-price-api" target="_blank" rel="noopener">Standard Bullion</a>. Döviz referans kuru: <a href="https://www.exchangerate-api.com/docs/free" target="_blank" rel="noopener">ExchangeRate-API</a>. Döviz geçmişi: <a href="https://frankfurter.dev/" target="_blank" rel="noopener">Frankfurter</a>.</p></div></div>
+    </section>`,
   });
 }
 
@@ -429,7 +469,7 @@ function rss(haberler) {
 }
 
 const siteHaritasi = haberler => `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${
-  ['/', '/haberler/', '/hakkimizda/', ...Object.keys(KATEGORILER).map(k => `/kategori/${k}/`), ...haberler.map(h => `/haber/${h.id}/`)].map(y => `<url><loc>${tamAdres(y)}</loc></url>`).join('')}</urlset>`;
+  ['/', '/haberler/', '/piyasalar/', '/hakkimizda/', ...Object.keys(KATEGORILER).map(k => `/kategori/${k}/`), ...haberler.map(h => `/haber/${h.id}/`)].map(y => `<url><loc>${tamAdres(y)}</loc></url>`).join('')}</urlset>`;
 
 // ---------- Derleme ----------
 
@@ -446,7 +486,8 @@ async function derle() {
   const haberler = await haberleriOku();
   CSS = kucult(await readFile('kaynak/stil.css', 'utf8'));
   const BETIK = await readFile('kaynak/site.js', 'utf8');
-  VARLIK_SURUM = createHash('sha256').update(CSS + BETIK).digest('hex').slice(0, 12);
+  const PIYASA_BETIGI = await readFile('kaynak/piyasa.js', 'utf8');
+  VARLIK_SURUM = createHash('sha256').update(CSS + BETIK + PIYASA_BETIGI).digest('hex').slice(0, 12);
   for (const d of (await readdir('kaynak/ikonlar')).filter(d => d.endsWith('.svg'))) {
     const svg = await readFile(`kaynak/ikonlar/${d}`, 'utf8');
     ikonlar.set(d.slice(0, -4), `<symbol id="i-${d.slice(0, -4)}" viewBox="0 0 256 256" fill="currentColor">${svg.replace(/^<svg[^>]*>|<\/svg>\s*$/g, '')}</symbol>`);
@@ -456,6 +497,7 @@ async function derle() {
   await rm(CIKTI, { recursive: true, force: true });
   await cp('statik', CIKTI, { recursive: true });
   await writeFile(`${CIKTI}/site.js`, BETIK);
+  await writeFile(`${CIKTI}/piyasa.js`, PIYASA_BETIGI);
   await writeFile(`${CIKTI}/stil.css`, CSS.replaceAll('/*TABAN*/', TABAN));
   await writeFile(`${CIKTI}/.nojekyll`, '');
   if (OZEL_ALAN) await writeFile(`${CIKTI}/CNAME`, `${OZEL_ALAN}\n`);
@@ -464,6 +506,7 @@ async function derle() {
   await Promise.all(haberler.map(h => yaz(`/haber/${h.id}/`, haberSayfasi(h, haberler))));
   await Promise.all(Object.keys(KATEGORILER).map(k => yaz(`/kategori/${k}/`, kategoriSayfasi(k, haberler))));
   await yaz('/haberler/', listeSayfasi({ baslik: 'Son Haberler', liste: haberler, yol: '/haberler/', aciklama: 'Türkiye ve dünyadan en son haberler.' }));
+  await yaz('/piyasalar/', piyasalarSayfasi());
   await yaz('/hakkimizda/', hakkimizda());
   await yaz('/404.html', bulunamadi());
   await yaz('/rss.xml', rss(haberler));
@@ -473,6 +516,7 @@ async function derle() {
     b: h.baslik, s: h.spot, u: h.url, k: h.kategoriAd, t: h.tarih.toISOString(),
     g: h.gorsel ? u(`/gorseller/${h.gorsel.id}-480.webp`) : null, e: h.etiketler.join(' '),
   }))));
+  await yaz('/yardim.json', JSON.stringify(haberler.map(h => ({ id: h.id, baslik: h.baslik, spot: h.spot, govde: h.govde, kategori: h.kategoriAd, url: tamAdres(`/haber/${h.id}/`) }))));
   console.log(`${haberler.length} haber, ${Object.keys(KATEGORILER).length} kategori derlendi (${Math.round(performance.now() - baslangic)} ms)`);
 }
 

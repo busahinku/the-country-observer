@@ -8,10 +8,11 @@ if [ "${1:-}" = "--alan-adi" ]; then
     exit 1
   fi
   node --input-type=module - "$2" <<'JS'
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readFile } from 'node:fs/promises';
 const alan = process.argv[2];
 if (!/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i.test(alan)) throw new Error('Geçerli bir alan adı girin.');
-await writeFile('yayin-ayarlari.json', JSON.stringify({site_adresi:`https://${alan}`,taban_yol:'',ozel_alan_adi:alan}, null, 2)+'\n');
+const onceki = JSON.parse(await readFile('yayin-ayarlari.json', 'utf8'));
+await writeFile('yayin-ayarlari.json', JSON.stringify({...onceki,site_adresi:`https://${alan}`,taban_yol:'',ozel_alan_adi:alan}, null, 2)+'\n');
 JS
 fi
 ADRES=$(git remote get-url origin)
