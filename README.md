@@ -2,7 +2,7 @@
 
 Türkiye odaklı, statik ve bağımlılıksız haber sitesi. `node derle.mjs` komutu `icerik/` klasöründeki haberlerden `yayin/` klasörüne hazır HTML üretir. `sh yayinla.sh` siteyi derleyip `gh-pages` dalına gönderir; GitHub Pages siteyi bu daldan yayınlar.
 
-Adres: https://busahinku.github.io/the-country-observer/
+Adres: https://busahin.com/the-country-observer/
 
 ## Haber eklemek
 

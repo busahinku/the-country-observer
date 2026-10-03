@@ -10,4 +10,4 @@ git add -A
 git -c user.name="$(git -C .. config user.name || echo yayin)" -c user.email="$(git -C .. config user.email || echo yayin@localhost)" commit -qm "Yayın: $(date '+%Y-%m-%d %H:%M')"
 git push -qf "$ADRES" gh-pages
 rm -rf .git
-echo "Yayınlandı: https://busahinku.github.io/the-country-observer/"
+echo "Yayınlandı: https://busahin.com/the-country-observer/"

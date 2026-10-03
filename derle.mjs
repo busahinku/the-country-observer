@@ -4,7 +4,7 @@
 import { readFile, writeFile, readdir, mkdir, cp, rm } from 'node:fs/promises';
 
 const TABAN = (process.env.TABAN_YOL ?? '/the-country-observer').replace(/\/$/, '');
-const SITE = process.env.SITE_ADRESI ?? 'https://busahinku.github.io';
+const SITE = process.env.SITE_ADRESI ?? 'https://busahin.com';
 const CIKTI = process.env.CIKTI_DIZIN ?? 'yayin';
 const ICERIK = process.env.ICERIK_DIZIN ?? 'icerik';
 const SITE_ADI = 'The Country Observer';
