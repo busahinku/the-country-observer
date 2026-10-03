@@ -1,5 +1,5 @@
 ---
-baslik: DEAŞ’a yönelik 16 ilde operasyonda 51 kişi yakalandı
+baslik: DEAŞ’a 16 ilde eş zamanlı operasyon: 51 şüpheli yakalandı
 spot: İçişleri Bakanlığı, DEAŞ’a yönelik 16 ilde düzenlenen operasyonlarda 51 şüphelinin yakalandığını açıkladı. Çalışmalar jandarma birimleri ve cumhuriyet başsavcılıklarının koordinasyonunda yürütüldü.
 kategori: gundem
 yazar: Haber Merkezi

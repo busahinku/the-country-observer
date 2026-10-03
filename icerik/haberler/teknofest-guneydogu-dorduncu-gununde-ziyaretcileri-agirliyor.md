@@ -1,5 +1,5 @@
 ---
-baslik: TEKNOFEST Güneydoğu dördüncü gününde ziyaretçileri ağırlıyor
+baslik: TEKNOFEST Güneydoğu’da dördüncü gün: Gösteri uçuşları ve atölyeler
 spot: Şanlıurfa GAP Havalimanı’nda düzenlenen TEKNOFEST Güneydoğu’da dördüncü gün etkinlikleri başladı. Festivalde havacılık gösterileri, teknoloji sergileri, bilim atölyeleri ve simülasyon alanları bulunuyor.
 kategori: teknoloji
 yazar: Haber Merkezi

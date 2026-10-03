@@ -1,5 +1,5 @@
 ---
-baslik: Kira kararında kritik ayrıntı: Yeni sözleşme eski kiracılığı sıfırlamıyor
+baslik: Kira davalarında emsal karar: Yenilenen sözleşme beş yıllık süreyi sıfırlamıyor
 spot: Yargıtay 3. Hukuk Dairesi, 2005’ten beri aynı iş yerini kullanan kiracıyla ilgili kira tespit davasında alt mahkemenin kararını bozdu. Uyuşmazlıkta, 2018’de yenilenen sözleşmenin ardından beş yıl geçmediği gerekçesiyle emsal kira değerlendirmesi yapılmamıştı.
 kategori: analiz
 yazar: Haber Merkezi

@@ -6,9 +6,9 @@ yazar: Haber Merkezi
 tarih: 2026-10-03T09:45:02.000Z
 bicim: kisa
 etiketler: []
-gorsel_sorgu: Sivas landscape
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 kaynaklar: [{"ad":"Hürriyet","url":"https://www.hurriyet.com.tr/gundem/yolcu-otobusu-tarlaya-girdi-9-kisi-yaralandi-43328178"},{"ad":"Habertürk","url":"https://www.haberturk.com/gundem/son-dakika-sivas-ta-yolcu-otobusu-tarlaya-girdi-2si-cocuk-9-yarali-3916947"},{"ad":"Karar","url":"https://www.karar.com/sehir-haberleri/sivasta-yolcu-otobusu-tarlaya-girdi-2si-cocuk-9-yarali-2076010"}]
+gorsel_dosya: File:IC Bus, Kamil Koç 01.jpg
+gorsel_aciklama: Şehirlerarası yolcu otobüsü. Temsili fotoğraf.
 ---
 Sivas’ın Kangal ilçesinde bir yolcu otobüsü kontrolden çıkarak yol kenarındaki tarlaya girdi. Sivas–Malatya kara yolunun Yeşildere köyü yakınlarında, saat 03.00 sıralarında meydana gelen kazada sürücüyle birlikte dokuz kişi yaralandı.
 

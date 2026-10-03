@@ -1,5 +1,5 @@
 ---
-baslik: Sultanlar Ligi’nde 43. sezonun ilk servisi pazar günü
+baslik: Sultanlar Ligi’nde perde açılıyor: İlk maç VakıfBank–Beşiktaş
 spot: Vodafone Sultanlar Ligi’nin 43. sezonu 4 Ekim’de başlıyor. Açılış gününde son şampiyon VakıfBank, saat 14.00’te Beşiktaş’ı ağırlayacak. Nilüfer Belediyespor ile Eczacıbaşı’nın karşılaşması 16.00’da başlayacak.
 kategori: spor
 yazar: Haber Merkezi

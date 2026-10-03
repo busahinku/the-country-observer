@@ -7,7 +7,8 @@ tarih: 2026-10-03T11:16:52.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: Sepang circuit
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Max Verstappen 2022.jpg
+gorsel_aciklama: Max Verstappen’in 2022 sezonundan arşiv fotoğrafı.
 kaynaklar: [{"ad":"Formula 1","url":"https://www.formula1.com/en/latest/article/verstappen-seizes-first-pole-position-of-the-season-in-qualifying-for-bahrain-gp-in-malaysia.3BW0zzYBLhG54bsQoNKFvP.3BW0zzYBLhG54bsQoNKFvP"},{"ad":"Habertürk","url":"https://www.haberturk.com/spor/formula-1-bahreyn-grand-prix-sinde-pole-pozisyonu-max-verstappen-in-3916954"},{"ad":"Karar","url":"https://www.karar.com/spor-haberleri/verstappen-pole-pozisyonunda-2076034"}]
 ---
 Formula 1’de Bahreyn Grand Prix’sinin sıralama turlarında en hızlı isim Max Verstappen oldu. Yer değişikliği nedeniyle yarış Malezya’daki Sepang Pisti’nde düzenleniyor. Red Bull pilotu 1 dakika 35,130 saniyelik dereceyle sezonun ilk pole pozisyonunu aldı.

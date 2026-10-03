@@ -1,5 +1,5 @@
 ---
-baslik: Kocaeli merkezli dolandırıcılık soruşturmasında 31 tutuklama
+baslik: Gebze merkezli dolandırıcılık soruşturmasında 31 tutuklama
 spot: Gebze Cumhuriyet Başsavcılığı’nın yürüttüğü nitelikli dolandırıcılık soruşturmasında gözaltındaki 52 şüpheliden 31’i tutuklandı. Yirmi bir kişi hakkında adli kontrol, sekiz şüpheli hakkında yakalama kararı verildi.
 kategori: gundem
 yazar: Haber Merkezi

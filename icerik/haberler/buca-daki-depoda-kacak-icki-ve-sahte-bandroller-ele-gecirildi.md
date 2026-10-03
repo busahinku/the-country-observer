@@ -1,5 +1,5 @@
 ---
-baslik: Buca’daki depoda kaçak içki ve sahte bandroller ele geçirildi
+baslik: Buca’da 3,8 milyon liralık kaçak içki deposu ortaya çıktı
 spot: İzmir’in Buca ilçesindeki bir depoya düzenlenen operasyonda 23 binin üzerinde kaçak içki ürünü ele geçirildi. Polis, yaklaşık piyasa değerini 3,8 milyon lira olarak açıkladı.
 kategori: gundem
 yazar: Haber Merkezi

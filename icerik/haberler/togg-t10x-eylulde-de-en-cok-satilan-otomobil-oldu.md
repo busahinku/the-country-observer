@@ -1,5 +1,5 @@
 ---
-baslik: Togg T10X eylülde de en çok satılan otomobil oldu
+baslik: Togg T10X üst üste ikinci ay zirvede: Eylülde 4.237 adet satıldı
 spot: Togg T10X, eylülde 4.237 satışla Türkiye otomobil pazarının en çok tercih edilen modeli oldu. Model, ağustosta elde ettiği birinciliği ikinci aya taşıdı. Aynı ay Togg T10F, 2.455 satışla genel sıralamada dördüncü oldu.
 kategori: ekonomi
 yazar: Haber Merkezi

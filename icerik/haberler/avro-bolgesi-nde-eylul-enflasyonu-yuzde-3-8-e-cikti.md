@@ -1,5 +1,5 @@
 ---
-baslik: Avro Bölgesi’nde eylül enflasyonu yüzde 3,8’e çıktı
+baslik: Avro Bölgesi’nde enflasyon beklentiyi aştı: Eylülde yüzde 3,8
 spot: Avro Bölgesi’nde yıllık tüketici enflasyonu, Eurostat’ın öncü verilerine göre eylülde yüzde 3,8 oldu. Ağustosta oran yüzde 3,2’ydi. Eylül verisi, yüzde 3,7’lik piyasa beklentisini de aştı.
 kategori: ekonomi
 yazar: Haber Merkezi

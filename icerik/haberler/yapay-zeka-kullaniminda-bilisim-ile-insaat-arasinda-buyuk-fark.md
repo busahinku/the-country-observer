@@ -1,5 +1,5 @@
 ---
-baslik: Yapay zekâ kullanımında bilişim ile inşaat arasında büyük fark
+baslik: Şirketlerde yapay zekâ uçurumu: Bilişimde yüzde 63,7, inşaatta yüzde 6,9
 spot: TÜİK’in 2026 yapay zekâ verilerinde kullanım oranı sektörlere göre belirgin biçimde ayrıştı. Telekomünikasyon, programlama ve bilişim girişimlerinde oran yüzde 63,7; inşaatta yüzde 6,9 oldu.
 kategori: analiz
 yazar: Haber Merkezi

@@ -1,5 +1,5 @@
 ---
-baslik: Motorine yeni indirim beklentisi: Salı günü için 4,95 lira konuşuluyor
+baslik: Motorinde indirim sürüyor: Salı günü litrede 4,95 lira daha düşebilir
 spot: Motorinin litre fiyatında 3 Ekim’den itibaren 2,22 liralık indirim uygulandı. Sektör kaynakları, salı günü için ilave 4,95 liralık indirim beklentisini paylaştı. Benzinde aynı açıklama kapsamında değişiklik beklenmiyor.
 kategori: ekonomi
 yazar: Haber Merkezi

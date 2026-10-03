@@ -1,5 +1,5 @@
 ---
-baslik: Flydubai’nin Tel Aviv seferleri askıya alındı
+baslik: Kokpitteki olayın ardından Flydubai, Tel Aviv uçuşlarını durdurdu
 spot: Flydubai, yetkililerin talebi üzerine Tel Aviv uçuşlarını yeni bir duyuruya kadar durdurdu. Karar, 30 Eylül’de Dubai’den havalanan FZ1073 sefer sayılı uçağın kokpitinde yaşanan güvenlik olayının ardından geldi.
 kategori: dunya
 yazar: Haber Merkezi

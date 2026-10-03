@@ -7,7 +7,8 @@ tarih: 2026-10-02T20:58:36.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: oil refinery
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:January 2025 Official Presidential Portrait of Donald J. Trump.jpg
+gorsel_aciklama: Donald Trump’ın resmî arşiv portresi.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/dunya/trump-iran-meselesi-cozuldugunde-petrol-fiyatlarinin-eski-seviyesine-dusecegini-soyledi/4076613"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/dunya/trump-iran-meselesi-cozulurse-petrol-fiyatlari-dusecek-958970.html"},{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/trump-iran-meselesi-cozulunce-petrol-fiyatlari-dusecek-3790263"}]
 ---
 ABD Başkanı Donald Trump, İran’la yaşanan sorunun çözülmesinin petrol fiyatlarını eski düzeylerine indirebileceğini savundu. Beyaz Saray bahçesinde gazetecilerin sorularını yanıtlayan Trump, fiyatların daha da aşağıya gidebileceğini söyledi.

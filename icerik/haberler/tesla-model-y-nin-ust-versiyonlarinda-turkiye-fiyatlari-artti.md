@@ -1,5 +1,5 @@
 ---
-baslik: Tesla Model Y’nin üst versiyonlarında Türkiye fiyatları arttı
+baslik: Tesla Model Y’ye zam: Üst donanımlar pahalandı, giriş versiyonu sabit
 spot: Tesla, Model Y’nin Türkiye’de satılan üst donanım seçeneklerinin fiyatlarını 2 Ekim itibarıyla yükseltti. Standart arkadan çekişli versiyonun 2.474.000 liralık fiyatı ise değişmedi.
 kategori: teknoloji
 yazar: Haber Merkezi

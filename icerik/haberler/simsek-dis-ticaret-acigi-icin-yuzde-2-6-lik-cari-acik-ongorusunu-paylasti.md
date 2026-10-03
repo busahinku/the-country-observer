@@ -1,5 +1,5 @@
 ---
-baslik: Şimşek dış ticaret açığı için yüzde 2,6’lık cari açık öngörüsünü paylaştı
+baslik: Şimşek’ten cari açık tahmini: Savaşa rağmen yüzde 2,6
 spot: Hazine ve Maliye Bakanı Mehmet Şimşek, emtia fiyatlarının artırdığı ithalata rağmen dış ticaret açığındaki büyümenin ilk beklentilerden daha sınırlı kaldığını söyledi. Bakan, cari açığın milli gelire oranının yüzde 2,6 düzeyinde kalmasını öngördüklerini belirtti.
 kategori: ekonomi
 yazar: Haber Merkezi

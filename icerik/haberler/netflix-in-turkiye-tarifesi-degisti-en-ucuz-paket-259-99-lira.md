@@ -1,5 +1,5 @@
 ---
-baslik: Netflix’in Türkiye tarifesi değişti: En ucuz paket 259,99 lira
+baslik: Netflix’e yüzde 37’ye varan zam: En ucuz paket artık 259,99 lira
 spot: Netflix, Türkiye’deki üç abonelik paketinin de aylık ücretini artırdı. Temel paket 189,99 liradan 259,99 liraya, Standart paket 289,99 liradan 389,99 liraya çıktı. Premium paketin ücreti ise 379,99 liradan 499,99 liraya yükseldi.
 kategori: teknoloji
 yazar: Haber Merkezi

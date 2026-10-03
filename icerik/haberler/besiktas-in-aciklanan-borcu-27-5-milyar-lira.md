@@ -1,5 +1,5 @@
 ---
-baslik: Beşiktaş’ın açıklanan borcu 27,5 milyar lira
+baslik: Beşiktaş’ın borç yükü açıklandı: 27,5 milyar lira
 spot: Beşiktaş’ın 31 Mayıs 2026 itibarıyla borcu 27 milyar 521 milyon 43 bin 773 lira olarak açıklandı. Rakam, kulübün olağan idari ve mali genel kurulunda paylaşıldı.
 kategori: spor
 yazar: Haber Merkezi

@@ -1,5 +1,5 @@
 ---
-baslik: İstanbul barajlarında ortalama doluluk yüzde 39,04
+baslik: Yağışlar barajlara yaradı: İstanbul’da doluluk yüzde 39,04
 spot: İstanbul’a su sağlayan barajların ortalama doluluk oranı 3 Ekim itibarıyla yüzde 39,04’e yükseldi. İSKİ verilerini aktaran kaynaklarda bir önceki günün ortalaması yüzde 38,5 olarak yer aldı.
 kategori: analiz
 yazar: Haber Merkezi

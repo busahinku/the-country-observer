@@ -3,6 +3,8 @@
 // Kullanım: node derle.mjs   (TABAN_YOL=/ ile yerel kök dizinde de derlenebilir)
 import { readFile, writeFile, readdir, mkdir, cp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { statSync } from 'node:fs';
 
 const YAYIN_AYARLARI = JSON.parse(await readFile('yayin-ayarlari.json', 'utf8').catch(() => '{}'));
 const TABAN = (process.env.TABAN_YOL ?? YAYIN_AYARLARI.taban_yol ?? '/the-country-observer').replace(/\/$/, '');
@@ -107,6 +109,19 @@ const kart = (h, sizes) => `<article class="kart belir">
   ${altSatir(h)}
 </article>`;
 
+// Piyasa bandı ve piyasalar sayfası için varlıklar: [kimlik, ad, ikon]
+const BORSA = [
+  ['xu100', 'BIST 100', 'bayrak:tr'], ['xu030', 'BIST 30', 'bayrak:tr'],
+  ['usdtry', 'Dolar', 'bayrak:us'], ['eurtry', 'Euro', 'bayrak:eu'], ['gbptry', 'Sterlin', 'bayrak:gb'],
+  ['gram-altin', 'Gram altın', 'altin'], ['ons-altin', 'Ons altın', 'altin'],
+  ['gram-gumus', 'Gram gümüş', 'gumus'], ['ons-gumus', 'Ons gümüş', 'gumus'],
+  ['brent', 'Brent petrol', 'petrol'], ['bitcoin', 'Bitcoin', 'btc'], ['ethereum', 'Ethereum', 'eth'], ['sp500', 'S&P 500', 'bayrak:us'],
+];
+const borsaIkon = tur => tur.startsWith('bayrak:') ? `<span class="borsa-ikon"><img src="${u(`/bayraklar/${tur.slice(7)}.svg`)}" alt="" width="22" height="22"></span>`
+  : tur === 'altin' ? '<span class="borsa-ikon altin" aria-hidden="true">Au</span>'
+  : tur === 'gumus' ? '<span class="borsa-ikon gumus" aria-hidden="true">Ag</span>'
+  : `<span class="borsa-ikon ${tur}">${ikon({ petrol: 'droplet', btc: 'marka-bitcoin', eth: 'marka-ethereum' }[tur])}</span>`;
+
 const bolumBasi = (baslik, bag) => `<div class="bolum-basi"><h2>${baslik}</h2>${bag ? `<a class="tumu" href="${u(bag)}">Tümünü gör ${ikon('arrow-right')}</a>` : ''}</div>`;
 
 function ustAlan(koyu, aktif) {
@@ -116,8 +131,8 @@ function ustAlan(koyu, aktif) {
   return `<header class="ust-alan${koyu ? ' koyu' : ''}">
   <div class="kap ust-satir">
     <div class="ust-sol">
-      <button class="ikon-dugme" data-ac="menu" aria-label="Menüyü aç">${ikon('list')}</button>
-      <button class="ikon-dugme" data-ac="arama" aria-label="Haberlerde ara">${ikon('magnifying-glass')}</button>
+      <button class="ikon-dugme" data-ac="menu" aria-label="Menüyü aç">${ikon('menu')}</button>
+      <button class="ikon-dugme" data-ac="arama" aria-label="Haberlerde ara">${ikon('search')}</button>
     </div>
     <a class="baslik-logo" href="${u('/')}">
       <${kunyeEtiket} class="logo">The Country Observer</${kunyeEtiket}>
@@ -139,7 +154,7 @@ function yapiskanCubuk(aktif) {
   <div class="kap yapiskan-ic">
     <a class="yapiskan-logo" href="${u('/')}" tabindex="-1">The Country Observer</a>
     <nav><ul>${nav}</ul></nav>
-    <button class="ikon-dugme" data-ac="arama" tabindex="-1" aria-label="Haberlerde ara">${ikon('magnifying-glass')}</button>
+    <button class="ikon-dugme" data-ac="arama" tabindex="-1" aria-label="Haberlerde ara">${ikon('search')}</button>
   </div>
 </div>`;
 }
@@ -162,17 +177,15 @@ const altAlan = () => `<footer class="alt-alan">
 const pencereler = () => `<dialog class="pencere arama-pencere" id="arama" aria-label="Haberlerde ara">
   <form method="dialog" class="arama-form" role="search">
     <label class="gizli" for="arama-girdi">Aranacak kelime</label>
-    ${ikon('magnifying-glass')}
+    ${ikon('search')}
     <input id="arama-girdi" type="search" placeholder="Haber, kişi ya da konu arayın" autocomplete="off" enterkeyhint="search">
     <button class="ikon-dugme" value="kapat" aria-label="Aramayı kapat">${ikon('x')}</button>
   </form>
-  <div class="arama-ipuclari"><span>Arşivde ara</span><span data-arama-sayi>100 haber</span></div>
-  <div class="arama-oneriler" aria-label="Önerilen aramalar"><button type="button" data-arama-oneri="ekonomi">Ekonomi</button><button type="button" data-arama-oneri="İstanbul">İstanbul</button><button type="button" data-arama-oneri="spor">Spor</button></div>
-  <div class="arama-sonuc" aria-live="polite"><p class="arama-bos">Bir başlık, kişi ya da konu yazın. Sonuçlar yazdıkça görünür.</p></div>
+  <div class="arama-sonuc" aria-live="polite"></div>
 </dialog>
 <dialog class="pencere menu-pencere" id="menu" aria-label="Menü">
   <div class="menu-ust"><span class="logo">The Country Observer</span><form method="dialog"><button class="ikon-dugme" aria-label="Menüyü kapat">${ikon('x')}</button></form></div>
-  <nav aria-label="Tüm bölümler"><ul>${Object.entries(KATEGORILER).map(([k, ad]) => `<li><a href="${u(`/kategori/${k}/`)}">${ad}${ikon('caret-right')}</a></li>`).join('')}</ul></nav>
+  <nav aria-label="Tüm bölümler"><ul>${Object.entries(KATEGORILER).map(([k, ad]) => `<li><a href="${u(`/kategori/${k}/`)}">${ad}${ikon('chevron-right')}</a></li>`).join('')}</ul></nav>
   <ul class="menu-alt"><li><a href="${u('/')}">Ana sayfa</a></li><li><a href="${u('/hakkimizda/')}">Hakkımızda</a></li><li><a href="${u('/rss.xml')}">RSS akışı</a></li></ul>
 </dialog>
 <dialog class="pencere abone-pencere" id="abone" aria-labelledby="abone-baslik">
@@ -183,7 +196,33 @@ const pencereler = () => `<dialog class="pencere arama-pencere" id="arama" aria-
   <a class="dugme dugme-dolu" href="https://feedly.com/i/subscription/feed/${encodeURIComponent(tamAdres('/rss.xml'))}" rel="noopener" target="_blank">Feedly'de takip et</a>
 </dialog>`;
 
-let CSS = '', SPRITE = '', VARLIK_SURUM = '';
+let CSS = '', SPRITE = '', VARLIK_SURUM = '', SES_DALGALARI = {};
+
+// Ses kayıtlarının gerçek genlik dalgası (80 çubuk). ffmpeg ile bir kez hesaplanır, icerik/ses-dalgalari.json'da saklanır.
+async function sesDalgalariniHazirla(haberler) {
+  const dosya = `${ICERIK}/ses-dalgalari.json`;
+  const onbellek = JSON.parse(await readFile(dosya, 'utf8').catch(() => '{}'));
+  let degisti = false;
+  for (const h of haberler.filter(h => h.sesVar)) {
+    const yol = `statik/sesler/${h.id}.mp3`, boyut = statSync(yol).size;
+    if (onbellek[h.id]?.boyut === boyut && onbellek[h.id].s === 3) continue;
+    try {
+      const ham = execFileSync('ffmpeg', ['-v', 'quiet', '-i', yol, '-ac', '1', '-ar', '2000', '-f', 's16le', '-'], { maxBuffer: 64 * 1024 * 1024 });
+      const ornek = new Int16Array(ham.buffer, ham.byteOffset, Math.floor(ham.length / 2)), adet = 80, parca = Math.floor(ornek.length / adet), pencere = 240;
+      // Her dilimin ortasındaki kısa pencere: hece ve duraklamalar dalgada görünür.
+      const rms = Array.from({ length: adet }, (_, i) => {
+        const orta = i * parca + (parca >> 1); let t = 0;
+        for (let j = orta - pencere / 2; j < orta + pencere / 2; j++) t += (ornek[j] || 0) ** 2;
+        return Math.sqrt(t / pencere);
+      });
+      const enBuyuk = Math.max(...rms) || 1;
+      onbellek[h.id] = { boyut, s: 3, dalga: rms.map(v => +Math.max(.12, (v / enBuyuk) ** .75).toFixed(2)) };
+      degisti = true;
+    } catch { /* ffmpeg yoksa dalga düz çizilir */ }
+  }
+  if (degisti) await writeFile(dosya, JSON.stringify(onbellek));
+  SES_DALGALARI = Object.fromEntries(Object.entries(onbellek).map(([id, v]) => [id, v.dalga]));
+}
 
 function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorselYolu, tur = 'website', jsonld, onYukle = '' }) {
   const tamBaslik = baslik ? `${baslik} | ${SITE_ADI}` : `${SITE_ADI} | Türkiye'nin bağımsız haber gazetesi`;
@@ -200,13 +239,13 @@ function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorsel
 <meta property="og:title" content="${kacis(baslik || SITE_ADI)}"><meta property="og:description" content="${kacis(aciklama)}">
 <meta property="og:url" content="${tamAdres(yol)}"><meta property="og:image" content="${og}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f5">
 <link rel="icon" href="${u('/favicon.svg')}" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="${SITE_ADI}" href="${u('/rss.xml')}">
 <link rel="preload" href="${u('/yazitipleri/inter.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${u('/yazitipleri/bower.woff2')}" as="font" type="font/woff2" crossorigin>
 ${onYukle}
-<script>try{var t=localStorage.getItem('tema');if(t)document.documentElement.dataset.tema=t}catch(e){}</script>
+<script>try{document.documentElement.dataset.tema=localStorage.getItem('tema')==='koyu'?'koyu':'acik'}catch(e){document.documentElement.dataset.tema='acik'}</script>
 <link rel="stylesheet" href="${u(`/stil.css?v=${VARLIK_SURUM}`)}">
 <script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"${TABAN}/*"},{"not":{"href_matches":"${TABAN}/*.xml"}}]},"eagerness":"moderate"}]}</script>
 ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>` : ''}
@@ -220,16 +259,15 @@ ${koyu ? '' : ustAlan(false, aktif)}
 ${icerik}
 </main>
 ${altAlan()}
-<aside class="soru-kutusu" aria-label="Haberler hakkında soru sor">
-  <section class="soru-panel" id="soru-panel" hidden aria-label="Haber asistanı">
-    <div class="soru-ust"><div><span class="soru-kicker">THE COUNTRY OBSERVER</span><h2>Gündemi sorun</h2></div><button class="ikon-dugme" data-soru-kapat aria-label="Soru kutusunu kapat">${ikon('x')}</button></div>
-    <p class="soru-aciklama">${YARDIM_ADRESI ? (yol.startsWith('/haber/') ? 'Bu haberin ayrıntılarını sorun; yanıtlar haber metnine dayanır.' : 'Yayımlanan haberlerimizde bir konu ya da gelişme arayın.') : 'Şimdilik arşivdeki ilgili haberleri bulur; kaynak bağlantılarını gösterir.'}</p>
-    <div class="soru-mesajlar" role="log" aria-live="polite"></div>
-    <form class="soru-form"><label class="gizli" for="soru-girdi">Sorunuz</label><input id="soru-girdi" name="soru" maxlength="350" placeholder="Gündemle ilgili bir soru sorun" autocomplete="off" required><button type="submit" aria-label="Soruyu gönder">${ikon('arrow-up-right')}</button></form>
-    <p class="soru-not">Yanıtlar hata içerebilir; haberin kaynaklarını da inceleyin.</p>
-  </section>
-  <button class="soru-ac" type="button" data-soru-ac aria-expanded="false" aria-controls="soru-panel"><span class="soru-ac-ikon">?</span><span>${yol.startsWith('/haber/') ? 'Bu haberi sor' : 'Gündemi sor'}</span>${ikon('arrow-up-right')}</button>
-</aside>
+<div class="soru" data-soru>
+  <div class="soru-yuzey">
+    <div class="soru-akis"><div class="soru-akis-ic">
+      <button class="soru-kapat" type="button" aria-label="Yanıtları gizle">${ikon('x')}</button>
+      <div class="soru-mesajlar" role="log" aria-live="polite"></div>
+    </div></div>
+    <form class="soru-cubuk"><label class="gizli" for="soru-girdi">Haberlerle ilgili soru sorun</label><input id="soru-girdi" name="soru" maxlength="300" autocomplete="off" enterkeyhint="send" placeholder="${yol.startsWith('/haber/') ? 'Bu haberle ilgili bir soru sorun' : 'Gündemle ilgili bir soru sorun'}"><button class="soru-gonder" type="submit" aria-label="Gönder" disabled>${ikon('arrow-up')}</button></form>
+  </div>
+</div>
 ${pencereler()}
 <script src="${u(`/site.js?v=${VARLIK_SURUM}`)}" defer></script>
 ${yol === '/' || yol === '/piyasalar/' ? `<script src="${u(`/piyasa.js?v=${VARLIK_SURUM}`)}" defer></script>` : ''}
@@ -281,7 +319,7 @@ function anaSayfa(haberler) {
       </article>`).join('')}
       <div class="manset-kontrol">
         <div class="noktalar">${manset.map((h, i) => `<button class="nokta${i ? '' : ' aktif'}" aria-label="${i + 1}. manşet"${i ? '' : ' aria-current="true"'}></button>`).join('')}</div>
-        <button class="ikon-dugme manset-ileri" aria-label="Sonraki manşet">${ikon('caret-right')}</button>
+        <button class="ikon-dugme manset-ileri" aria-label="Sonraki manşet">${ikon('chevron-right')}</button>
       </div>
     </div>
     <aside class="manset-yan" aria-label="Öne çıkanlar">
@@ -293,16 +331,13 @@ function anaSayfa(haberler) {
   const trendHtml = trend.length < 3 ? '' : `<div class="kap"><section class="trend" aria-label="Gündemdekiler">
   <h2 class="trend-etiket">Gündemde</h2>
   <ul class="trend-liste">${trend.map(h => `<li><a href="${h.url}">${gorsel(h, { sizes: '64px' })}<span>${kacis(h.baslik)}</span></a></li>`).join('')}</ul>
-  <button class="ikon-dugme trend-ileri" aria-label="Diğer gündem haberleri">${ikon('caret-right')}</button>
+  <button class="ikon-dugme trend-ileri" aria-label="Diğer gündem haberleri">${ikon('chevron-right')}</button>
 </section></div>`;
 
   const kartSatiri = (baslik, liste, bag) => `<section class="kap bolum">${bolumBasi(baslik, bag)}
   <div class="izgara-4">${liste.map(h => kart(h, '(max-width: 640px) 100px, (max-width: 1024px) 50vw, 25vw')).join('')}</div></section>`;
-  const piyasaSeridi = `<section class="kap piyasa-seridi" aria-label="Piyasalardan son veriler">
-    <div class="piyasa-seridi-bas"><span>PİYASALAR</span><a href="${u('/piyasalar/')}">Ayrıntılı görünüm ${ikon('arrow-up-right')}</a></div>
-    <div class="piyasa-seridi-grid">
-      ${[['altin','Ons altın','USD / ons'],['gumus','Ons gümüş','USD / ons'],['dolar','Dolar / TL','Günlük kur'],['avro','Avro / TL','Günlük kur']].map(([id,ad,birim]) => `<a class="piyasa-ozet" href="${u(`/piyasalar/#${id}`)}" data-piyasa-ozet="${id}"><span class="piyasa-ozet-ad">${ad}</span><strong>—</strong><span class="piyasa-ozet-alt">${birim}</span></a>`).join('')}
-    </div><p class="piyasa-seridi-not" data-piyasa-zaman>Veriler yükleniyor…</p>
+  const borsaBandi = `<section class="kap borsa-bandi yukleniyor" aria-label="Piyasalar" data-borsa-bandi>
+    <div class="borsa-iz">${BORSA.map(([id, ad, tur]) => `<a class="borsa-oge" href="${u(`/piyasalar/#${id}`)}" data-borsa="${id}">${borsaIkon(tur)}<span class="borsa-ad">${kacis(ad)}</span><span class="borsa-deger">0.000,00</span><span class="borsa-fark"></span></a>`).join('')}</div>
   </section>`;
   const sonHtml = son.length ? kartSatiri('Son Haberler', son, '/haberler/') : '';
 
@@ -340,28 +375,38 @@ function anaSayfa(haberler) {
   return sayfa({
     yol: '/', koyu: true, onYukle, gorselYolu: `/gorseller/${ilk.gorsel.id}-1600.webp`,
     aciklama: "Türkiye ve dünyadan son dakika gelişmeleri, ekonomi, politika, spor ve kültür haberleri. Birden fazla kaynaktan doğrulanmış, sade ve ayrıntılı haberler.",
-    icerik: mansetHtml + trendHtml + piyasaSeridi + sonHtml + haftaninHtml + analizHtml + satirHtml,
+    icerik: mansetHtml + trendHtml + borsaBandi + sonHtml + haftaninHtml + analizHtml + satirHtml,
     jsonld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_ADI, url: tamAdres('/'), inLanguage: 'tr-TR' },
   });
 }
 
 function piyasalarSayfasi() {
+  const segment = (ad, veri, secili) => `<div class="segment" role="group" aria-label="${ad}" data-segment="${ad}">${veri.map(([k, yazi]) => `<button type="button" data-deger="${k}" aria-pressed="${k === secili}">${yazi}</button>`).join('')}<span class="segment-imlec" aria-hidden="true"></span></div>`;
   return sayfa({
-    baslik: 'Piyasalar', aciklama: 'Altın, gümüş, dolar ve avro fiyatları. Kaynağı ve güncellenme zamanı görünen piyasa verileri.', yol: '/piyasalar/',
-    icerik: `<section class="kap piyasa-sayfa">
-      <div class="piyasa-kunye"><span>EKONOMİ / VERİ MASASI</span><span data-piyasa-zaman>Veriler yükleniyor…</span></div>
-      <h1>Piyasalar</h1><p class="piyasa-giris">Değişen fiyatları, verinin geldiği yeri ve son güncellenme zamanını bir arada izleyin.</p>
-      <div class="piyasa-secim" role="group" aria-label="İzlenecek varlık">
-        ${[['altin','Ons altın'],['gumus','Ons gümüş'],['dolar','Dolar / TL'],['avro','Avro / TL']].map(([id,ad]) => `<button type="button" data-piyasa-sec="${id}" aria-pressed="${id === 'altin'}">${ad}</button>`).join('')}
+    baslik: 'Piyasalar', yol: '/piyasalar/',
+    aciklama: 'BIST 100, BIST 30, dolar, euro, sterlin, gram ve ons altın, gümüş, Brent petrol ve kripto paralarda son durum ve etkileşimli grafikler.',
+    onYukle: `<script src="${u(`/lightweight-charts.js?v=${VARLIK_SURUM}`)}" defer></script>`,
+    icerik: `<section class="kap borsa-sayfa">
+  <div class="borsa-duzen">
+    <ul class="borsa-liste" role="listbox" aria-label="Piyasalar">${BORSA.map(([id, ad, tur], i) => `<li><button class="borsa-satir" type="button" role="option" aria-selected="${i === 0}" data-borsa-sec="${id}">${borsaIkon(tur)}<span class="borsa-satir-ad">${kacis(ad)}</span><span class="borsa-satir-sag"><b data-deger>—</b><span class="borsa-fark" data-fark></span></span></button></li>`).join('')}</ul>
+    <div class="borsa-ana">
+      <div class="borsa-bas">
+        <div class="borsa-fiyat">
+          <div class="borsa-kimlik" data-kimlik>${borsaIkon(BORSA[0][2])}<h1 data-ad>${BORSA[0][1]}</h1></div>
+          <strong data-fiyat>—</strong>
+          <div class="borsa-fiyat-alt"><span class="borsa-fark" data-fark></span><span data-etiket></span></div>
+        </div>
+        <div class="borsa-arac">
+          ${segment('Aralık', [['1g', '1G'], ['1h', '1H'], ['1a', '1A'], ['3a', '3A'], ['1y', '1Y'], ['5y', '5Y']], '1g')}
+          ${segment('Para birimi', [['TRY', '₺'], ['USD', '$']], 'TRY')}
+        </div>
       </div>
-      <div class="piyasa-kart">
-        <div class="piyasa-kart-ust"><div><span data-piyasa-ad>Ons altın</span><strong data-piyasa-deger>—</strong><span class="piyasa-degisim" data-piyasa-degisim>Veri bekleniyor</span></div><div class="piyasa-aralik" role="group" aria-label="Grafik aralığı"><button type="button" data-piyasa-aralik="24h" aria-pressed="true">1 gün</button><button type="button" data-piyasa-aralik="7d">1 hafta</button><button type="button" data-piyasa-aralik="1m">1 ay</button></div></div>
-        <div class="piyasa-cizim" data-piyasa-cizim role="img" aria-label="Seçilen piyasa verisinin zaman içindeki değişimi"><p>Grafik yükleniyor…</p></div>
-        <div class="piyasa-cizim-alt"><span data-piyasa-ilk></span><span data-piyasa-son></span></div>
-        <dl class="piyasa-olculer"><div><dt>Gün açılışı</dt><dd data-piyasa-acilis>—</dd></div><div><dt>Alış</dt><dd data-piyasa-alis>—</dd></div><div><dt>1 haftalık değişim</dt><dd data-piyasa-hafta>—</dd></div><div><dt>1 aylık değişim</dt><dd data-piyasa-ay>—</dd></div></dl>
-      </div>
-      <div class="piyasa-acik"><div><h2>Veri hakkında</h2><p>Altın ve gümüş fiyatları ons başına ABD doları cinsinden gösterilir. Bunlar uluslararası spot fiyatlarla aynı olmak zorunda olmayan işlemci alış fiyatlarıdır. Döviz kurları günlük referans verisidir; banka alış veya satış fiyatı değildir. Piyasalar kapalıyken son açıklanan değer görünür.</p></div><div><h2>Kaynaklar</h2><p>Değerli metaller: <a href="https://standardbullion.com/gold-price-api" target="_blank" rel="noopener">Standard Bullion</a>. Döviz referans kuru: <a href="https://www.exchangerate-api.com/docs/free" target="_blank" rel="noopener">ExchangeRate-API</a>. Döviz geçmişi: <a href="https://frankfurter.dev/" target="_blank" rel="noopener">Frankfurter</a>.</p></div></div>
-    </section>`,
+      <div class="borsa-grafik yukleniyor" data-grafik><div class="borsa-secim" hidden></div></div>
+      <dl class="borsa-olcu"><div><dt>Önceki kapanış</dt><dd data-onceki>—</dd></div><div><dt>Gün aralığı</dt><dd data-gun>—</dd></div><div><dt>52 hafta aralığı</dt><dd data-yil>—</dd></div></dl>
+      <p class="borsa-not">Kaynak: Yahoo Finance. Borsa İstanbul verileri 15 dakika gecikmelidir. İki tarih arasındaki değişimi görmek için grafikte sürükleyin.</p>
+    </div>
+  </div>
+</section>`,
   });
 }
 
@@ -374,24 +419,24 @@ function haberSayfasi(h, haberler) {
   const icerik = `<div class="ilerleme" aria-hidden="true"></div>
 <article class="haber">
   <header class="kap haber-bas">
-    <nav class="yol" aria-label="Sayfa konumu"><a href="${u('/')}">Ana sayfa</a>${ikon('caret-right')}<a href="${u(`/kategori/${h.kategori}/`)}">${kacis(h.kategoriAd)}</a></nav>
+    <nav class="yol" aria-label="Sayfa konumu"><a href="${u('/')}">Ana sayfa</a>${ikon('chevron-right')}<a href="${u(`/kategori/${h.kategori}/`)}">${kacis(h.kategoriAd)}</a></nav>
     <h1 class="haber-baslik">${kacis(h.baslik)}</h1>
     <p class="haber-spot">${kacis(h.spot)}</p>
     <div class="haber-kunye">
       <p><strong>${kacis(h.yazar)}</strong><span><time datetime="${h.tarih.toISOString()}">${tarihBicim.format(h.tarih)}</time> · ${h.dakika} dk okuma</span></p>
       <div class="paylas" aria-label="Paylaş">
-        <a class="ikon-dugme cerceveli" href="https://wa.me/?text=${metin}%20${paylas}" target="_blank" rel="noopener" aria-label="WhatsApp'ta paylaş">${ikon('whatsapp-logo')}</a>
-        <a class="ikon-dugme cerceveli" href="https://x.com/intent/post?text=${metin}&url=${paylas}" target="_blank" rel="noopener" aria-label="X'te paylaş">${ikon('x-logo')}</a>
-        <a class="ikon-dugme cerceveli" href="https://www.facebook.com/sharer/sharer.php?u=${paylas}" target="_blank" rel="noopener" aria-label="Facebook'ta paylaş">${ikon('facebook-logo')}</a>
-        <button class="ikon-dugme cerceveli" data-kopyala="${tamAdres(`/haber/${h.id}/`)}" aria-label="Bağlantıyı kopyala">${ikon('link-simple')}</button>
+        <a class="ikon-dugme cerceveli" href="https://wa.me/?text=${metin}%20${paylas}" target="_blank" rel="noopener" aria-label="WhatsApp'ta paylaş">${ikon('marka-whatsapp')}</a>
+        <a class="ikon-dugme cerceveli" href="https://x.com/intent/post?text=${metin}&url=${paylas}" target="_blank" rel="noopener" aria-label="X'te paylaş">${ikon('marka-x')}</a>
+        <a class="ikon-dugme cerceveli" href="https://www.facebook.com/sharer/sharer.php?u=${paylas}" target="_blank" rel="noopener" aria-label="Facebook'ta paylaş">${ikon('marka-facebook')}</a>
+        <button class="ikon-dugme cerceveli" data-kopyala="${tamAdres(`/haber/${h.id}/`)}" aria-label="Bağlantıyı kopyala">${ikon('link')}</button>
       </div>
     </div>
-    ${h.sesVar ? `<section class="sesli-haber" aria-label="Haberi sesli dinle">
-      <div class="sesli-bas"><strong>Haberi dinle</strong><span>Türkçe sesli anlatım</span></div>
-      <audio controls preload="none" aria-label="${kacis(h.baslik)} — sesli haber" src="${u(`/sesler/${h.id}.mp3`)}"></audio>
-      <label class="sesli-hiz">Dinleme hızı <select data-ses-hiz><option value="0.85">0,85×</option><option value="1" selected>1×</option><option value="1.15">1,15×</option><option value="1.3">1,3×</option><option value="1.5">1,5×</option></select></label>
-      <p class="sesli-durum" role="status">Bu haber yapay sesle okunmuştur.</p>
-    </section>` : ''}
+    ${h.sesVar ? `<div class="ses" data-ses>
+      <button class="ses-oynat" type="button" aria-label="Haberi dinle">${ikon('play', 'ikon ikon-oynat')}${ikon('pause', 'ikon ikon-duraklat')}</button>
+      <div class="ses-dalga" role="slider" tabindex="0" aria-label="Ses kaydında konum" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${(SES_DALGALARI[h.id] || Array(80).fill(.45)).map(v => `<span style="height:${Math.max(4, Math.round(v * 36))}px"></span>`).join('')}</div>
+      <button class="ses-hiz" type="button" aria-label="Oynatma hızı">1×</button>
+      <audio preload="none" src="${u(`/sesler/${h.id}.mp3`)}"></audio>
+    </div>` : ''}
   </header>
   ${g ? `<figure class="kap haber-gorsel">
     ${gorsel(h, { sizes: '(max-width: 1100px) 100vw, 1100px', oncelikli: true, sinif: 'kapak' })}
@@ -484,13 +529,18 @@ const kucult = css => css.replace(/\/\*(?!TABAN)[\s\S]*?\*\//g, '').replace(/\s+
 async function derle() {
   const baslangic = performance.now();
   const haberler = await haberleriOku();
+  await sesDalgalariniHazirla(haberler);
   CSS = kucult(await readFile('kaynak/stil.css', 'utf8'));
   const BETIK = await readFile('kaynak/site.js', 'utf8');
   const PIYASA_BETIGI = await readFile('kaynak/piyasa.js', 'utf8');
   VARLIK_SURUM = createHash('sha256').update(CSS + BETIK + PIYASA_BETIGI).digest('hex').slice(0, 12);
+  // Lucide (çizgi) ve Simple Icons (dolgu marka) ikonları tek bir SVG sprite'ta toplanır.
+  const ic = svg => svg.replace(/<!--[\s\S]*?-->/g, '').replace(/<title>[\s\S]*?<\/title>/g, '').replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '').trim();
   for (const d of (await readdir('kaynak/ikonlar')).filter(d => d.endsWith('.svg'))) {
-    const svg = await readFile(`kaynak/ikonlar/${d}`, 'utf8');
-    ikonlar.set(d.slice(0, -4), `<symbol id="i-${d.slice(0, -4)}" viewBox="0 0 256 256" fill="currentColor">${svg.replace(/^<svg[^>]*>|<\/svg>\s*$/g, '')}</symbol>`);
+    ikonlar.set(d.slice(0, -4), `<symbol id="i-${d.slice(0, -4)}" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${ic(await readFile(`kaynak/ikonlar/${d}`, 'utf8'))}</g></symbol>`);
+  }
+  for (const d of (await readdir('kaynak/ikonlar/marka')).filter(d => d.endsWith('.svg'))) {
+    ikonlar.set(`marka-${d.slice(0, -4)}`, `<symbol id="i-marka-${d.slice(0, -4)}" viewBox="0 0 24 24"><g fill="currentColor">${ic(await readFile(`kaynak/ikonlar/marka/${d}`, 'utf8'))}</g></symbol>`);
   }
   SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">${[...ikonlar.values()].join('')}</svg>`;
 

@@ -1,5 +1,5 @@
 ---
-baslik: Fabrikalardaki aktif robot sayısı beş milyonu geçti
+baslik: Fabrikalarda robot çağı: Dünyada aktif robot sayısı 5 milyonu aştı
 spot: Uluslararası Robotik Federasyonu’nun verilerine göre dünyadaki aktif endüstriyel robot sayısı 2025’te yüzde 9 artarak 5 milyon 79 bine ulaştı. Aynı yıl fabrikalara kurulan yeni robot sayısı yüzde 11 artışla 600 bini aştı.
 kategori: analiz
 yazar: Haber Merkezi

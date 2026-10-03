@@ -1,5 +1,5 @@
 ---
-baslik: Haftalık bilanço: Borsa, altın ve avro geriledi
+baslik: Borsada kayıp haftası: BIST 100 yüzde 4,88 düştü, gram altın da geriledi
 spot: BIST 100 endeksi haftayı yüzde 4,88 kayıpla 12.270,18 puanda tamamladı. Aynı dönemde gram altın yüzde 1,53, avro/TL yüzde 0,69 gerilerken dolar/TL yüzde 0,14 yükseldi.
 kategori: analiz
 yazar: Haber Merkezi
@@ -7,7 +7,8 @@ tarih: 2026-10-03T13:42:00.000Z
 bicim: analiz
 etiketler: []
 gorsel_sorgu: gold coins
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Gold bullion bars.jpg
+gorsel_aciklama: Altın külçeleri; piyasalara ilişkin arşiv fotoğrafı.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/yatirim-araclarinin-haftalik-performansi-belli-oldu/4076420"},{"ad":"CNN Türk","url":"https://www.cnnturk.com/ekonomi/yatirim-araclarinin-haftalik-performansi-belli-oldu-3474391"}]
 ---
 BIST 100 endeksi haftayı yüzde 4,88 kayıpla 12.270,18 puanda tamamladı. Aynı dönemde gram altın yüzde 1,53, avro/TL yüzde 0,69 gerilerken dolar/TL yüzde 0,14 yükseldi.

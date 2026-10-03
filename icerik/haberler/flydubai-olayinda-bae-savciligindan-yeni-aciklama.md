@@ -1,5 +1,5 @@
 ---
-baslik: Flydubai olayında BAE savcılığından yeni açıklama
+baslik: BAE: Flydubai uçağındaki yardımcı pilot terör eylemine teşebbüs etti
 spot: Birleşik Arap Emirlikleri Başsavcısı Hamed Seyf eş-Şamisi, Flydubai uçağındaki yardımcı pilotun terör eylemine teşebbüs ettiğini söyledi. Açıklama, resmî haber ajansı WAM üzerinden aktarıldı.
 kategori: dunya
 yazar: Haber Merkezi

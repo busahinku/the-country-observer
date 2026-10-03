@@ -1,5 +1,5 @@
 ---
-baslik: 75 ilde uyuşturucu operasyonu: 714 tutuklama
+baslik: 75 ilde dev uyuşturucu operasyonu: Yaklaşık bir ton madde ele geçirildi, 714 tutuklama
 spot: İçişleri Bakanlığı, 75 ilde düzenlenen operasyonlarda 1.297 şüphelinin yakalandığını, bunlardan 714’ünün tutuklandığını bildirdi. Operasyonlarda 985 kilogram 777 gram uyuşturucu madde ve 1 milyon 537 bin 667 uyuşturucu hap ele geçirildi.
 kategori: gundem
 yazar: Haber Merkezi

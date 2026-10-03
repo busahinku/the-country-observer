@@ -25,7 +25,9 @@ async function commonsAra(sorgu, kesinDosya) {
     const m = i.extmetadata || {};
     const oran = i.width / i.height;
     const lisans = temiz(m.LicenseShortName?.value);
-    if (!kesinDosya && (i.mime !== 'image/jpeg' || i.width < 1200 || oran < 1.2 || oran > 2.4 || !ACIK_LISANS.test(lisans))) continue;
+    // Kesin dosyada da lisansı doğrula; dikey portrelere ve PNG'lere izin ver.
+    if (!ACIK_LISANS.test(lisans) || !['image/jpeg', 'image/png'].includes(i.mime)) continue;
+    if (!kesinDosya && (i.width < 1200 || oran < 1.2 || oran > 2.4)) continue;
     return { url: i.thumburl || i.url, yazar: temiz(m.Artist?.value).slice(0, 80) || 'Bilinmiyor', lisans, kaynak: i.descriptionurl, platform: 'Wikimedia Commons' };
   }
   return null;

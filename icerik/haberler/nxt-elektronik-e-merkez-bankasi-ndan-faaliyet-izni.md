@@ -1,5 +1,5 @@
 ---
-baslik: NXT Elektronik’e Merkez Bankası’ndan faaliyet izni
+baslik: Merkez Bankası’ndan NXT Elektronik’e elektronik para izni
 spot: Türkiye Cumhuriyet Merkez Bankası, NXT Elektronik Para ve Ödeme Hizmetleri AŞ’ye elektronik para kuruluşu olarak faaliyet izni verdi. Karar Resmî Gazete’de yayımlandı.
 kategori: ekonomi
 yazar: Haber Merkezi

@@ -91,17 +91,10 @@ Stil ve etkileşim dosyaları tüm sayfalarda ortak ve içerik sürümüyle önb
 
 ## Piyasa verileri ve soru kutusu
 
-Ana sayfada ons altın, ons gümüş, dolar/TL ve avro/TL şeridi vardır. `piyasalar/` sayfasında metaller için son işlem fiyatı ile 1 gün, 1 hafta ve 1 ay grafikleri; döviz için günlük referans kuru ile haftalık ve aylık kapanış grafikleri görünür. Dövizin gün içi grafiği kaynaktaki ücretsiz akışta bulunmadığı için kapalıdır. Altın ve gümüş verisi Standard Bullion, döviz güncel referansları ExchangeRate-API, geçmiş döviz kapanışları Frankfurter üzerinden tarayıcıda alınır. Değerler kaynak saatleriyle birlikte gösterilir; fiyat akışı kesilirse uydurma değer basılmaz. Üçüncü taraf verilerin doğruluğu ve sürekliliği kaynaklara bağlıdır.
+Ana sayfadaki kayan bant ve `piyasalar/` sayfası BIST 100, BIST 30, dolar, euro, sterlin, gram ve ons altın, gram ve ons gümüş, Brent petrol, Bitcoin, Ethereum ve S&P 500 verilerini gösterir. Veri, Yahoo Finance'ten `yardim.busahin.com` Worker'ı üzerinden önbellekli alınır; Borsa İstanbul verileri 15 dakika gecikmelidir. Grafikler TradingView Lightweight Charts (Apache-2.0) ile çizilir; fareyle gezinilir, sürükleyerek iki tarih arasındaki değişim ölçülür, ₺/$ arasında geçilir.
 
-Soru kutusu, hizmete bağlanmadığında arşivde ilgili haberleri ve kaynak bağlantılarını bulur. OpenAI tabanlı yanıt için `araclar/yardim-worker.mjs` ve `araclar/wrangler.jsonc` içindeki Cloudflare Worker `https://yardim.busahin.com/` alanında çalışır. Bu uç nokta yayımlanmış haberlerden sabit bir arşiv çeker; ziyaretçi bir URL, sistem talimatı, araç veya bağlam gönderemez. İstek boyutu ve yanıt uzunluğu sınırlanır, ziyaretçi ve tüm site için hız sınırı uygulanır. Yanıt düz metindir ve kaynak haber bağlantıları ayrıca eklenir. Hiçbir istem enjeksiyonu savunması kusursuz değildir; modelin araç ve kod çalıştırma yetkisi bulunmaz.
-
-Cloudflare hesabındaki `country-observer-yardim` Worker'ında OpenAI anahtarı yalnızca `OPENAI_API_KEY` gizlisi olarak kaydedilmiştir. Anahtar hiçbir HTML, JavaScript, GitHub dosyası veya `yayin-ayarlari.json` içine yazılmamalıdır. Worker `gpt-5-nano` ve saklamasız yanıt kullanır; bu modelin erişimi ve fiyatı OpenAI hesabının durumuna bağlıdır. Yeniden dağıtım komutları:
+Sayfanın altındaki soru çubuğu Cloudflare Workers AI (Gemma 4) ile çalışır; OpenAI veya başka bir ücretli API kullanılmaz. Workers ücretsiz planında günlük 10.000 nöron hakkı vardır (yaklaşık 300 soru); kota dolarsa istekler hata verir, fatura çıkmaz. Worker yalnızca yayımlanan haberlerden ilgili olanları bağlam olarak kullanır, kod/HTML üretmeye başlarsa akışı keser, ziyaretçi ve site için hız sınırı uygular.
 
 ```sh
-npx wrangler secret put OPENAI_API_KEY --config araclar/wrangler.jsonc
-npx wrangler deploy --config araclar/wrangler.jsonc
+cd araclar && npx wrangler deploy --config wrangler.jsonc
 ```
-
-Worker adresi `yayin-ayarlari.json` içindeki `yardim_adresi` alanında tutulur. Yeni dağıtımlarda `SITE_ORIGIN` ve `SITE_URL` değişkenleri `haber.busahin.com` değerini korumalıdır. Anahtar olmadan soru kutusu yalnızca arşiv araması yapar.
-
-Ses kayıtları hâlihazırda ücretsiz Edge sinirsel sesinden üretilmiştir. Daha doğal Türkçe anlatım için açık lisanslı FreyaTTS denenebilir; 183 milyon parametreli yerel modelin tüm 100 haber için üretilmesi zaman ve yaklaşık gigabayt ölçeğinde model indirmesi gerektirir. ElevenLabs ücretsiz planı aylık 10 bin krediyle sınırlıdır ve ticari kullanım lisansı içermez. Google Cloud'un deneme kredisi bir seçenek olabilir ancak Cloud hesabı ve kimlik bilgileri gerekir.

@@ -1,5 +1,5 @@
 ---
-baslik: Galatasaray, üç farklı geriye düştüğü hazırlık maçında beraberliği buldu
+baslik: Galatasaray 3-0’dan döndü: Pendikspor maçı 3-3 bitti
 spot: Galatasaray, Pendikspor ile oynadığı hazırlık maçında 3–0 geriden gelerek 3–3 beraberliği yakaladı. Pendik Stadı’ndaki karşılaşmanın ilk yarısında Taha Emre İnce, Hakan Yeşil ve Bekir Karadeniz ev sahibini öne geçirdi.
 kategori: spor
 yazar: Haber Merkezi

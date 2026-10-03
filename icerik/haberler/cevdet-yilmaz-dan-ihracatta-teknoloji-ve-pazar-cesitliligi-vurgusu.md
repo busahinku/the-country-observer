@@ -1,5 +1,5 @@
 ---
-baslik: Cevdet Yılmaz’dan ihracatta teknoloji ve pazar çeşitliliği vurgusu
+baslik: Cevdet Yılmaz: İhracatta yeni hedef teknoloji ve yeni pazarlar
 spot: Cumhurbaşkanı Yardımcısı Cevdet Yılmaz, eylül ihracatındaki artışın ardından Türkiye’nin ticaret ağlarındaki konumunu güçlendireceklerini belirtti. Yılmaz, yıllıklandırılmış ihracatın 283,7 milyar dolara ulaştığını hatırlattı.
 kategori: ekonomi
 yazar: Haber Merkezi
@@ -7,7 +7,8 @@ tarih: 2026-10-03T10:03:57.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: container port Turkey
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Cevdet Yılmaz and Olivér Várhelyi in May 2024.jpg
+gorsel_aciklama: Cevdet Yılmaz’ın 2024 yılındaki bir görüşmeden arşiv fotoğrafı.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/cumhurbaskani-yardimcisi-yilmaz-turkiyenin-konumunu-daha-da-guclendirecegiz/4076886"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/gundem/cevdet-yilmaz-turkiyenin-konumunu-daha-da-guclendirecegiz-959002.html"}]
 ---
 Cumhurbaşkanı Yardımcısı Cevdet Yılmaz, eylül ihracatındaki artışın ardından Türkiye’nin ticaret ağlarındaki konumunu güçlendireceklerini belirtti. Yılmaz, yıllıklandırılmış ihracatın 283,7 milyar dolara ulaştığını hatırlattı.

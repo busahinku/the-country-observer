@@ -5,23 +5,46 @@
   const TABAN = document.body.dataset.taban || '';
   const azHareket = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Sesli haber: aynı anda yalnızca bir kayıt çalsın.
-  $$('audio').forEach(ses => {
-    ses.addEventListener('play', () => $$('audio').forEach(diger => { if (diger !== ses) diger.pause(); }));
-    ses.addEventListener('error', () => {
-      const durum = $('.sesli-durum', ses.closest('.sesli-haber'));
-      if (durum) durum.textContent = 'Ses kaydı yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.';
+  // Sesli haber: oynat, dalgada gezin, hızı değiştir.
+  $$('[data-ses]').forEach(kap => {
+    const ses = $('audio', kap), oynat = $('.ses-oynat', kap), dalga = $('.ses-dalga', kap), hiz = $('.ses-hiz', kap);
+    const cubuklar = $$('span', dalga), hizlar = [1, 1.25, 1.5, 2, .75];
+    const oran = () => Number.isFinite(ses.duration) && ses.duration > 0 ? ses.currentTime / ses.duration : 0;
+    const boya = (o, onizleme = -1) => {
+      const simdi = Math.floor(o * cubuklar.length);
+      cubuklar.forEach((c, i) => {
+        c.classList.toggle('gecti', i < simdi);
+        c.classList.toggle('simdi', i === simdi && o > 0);
+        c.classList.toggle('on', onizleme >= 0 && i >= simdi && i < onizleme);
+      });
+      dalga.setAttribute('aria-valuenow', String(Math.round(o * 100)));
+    };
+    const konum = e => { const r = dalga.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); };
+    const git = o => { if (Number.isFinite(ses.duration)) { ses.currentTime = o * ses.duration; boya(o); } else { ses.dataset.bekleyen = o; ses.play().catch(() => {}); } };
+    oynat.addEventListener('click', () => ses.paused ? ses.play().catch(() => {}) : ses.pause());
+    dalga.addEventListener('pointerdown', e => { dalga.setPointerCapture(e.pointerId); git(konum(e)); });
+    dalga.addEventListener('pointermove', e => e.buttons ? git(konum(e)) : boya(oran(), Math.ceil(konum(e) * cubuklar.length)));
+    dalga.addEventListener('pointerleave', () => boya(oran()));
+    dalga.addEventListener('keydown', e => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(e.key) || !Number.isFinite(ses.duration)) return;
+      e.preventDefault();
+      ses.currentTime = Math.max(0, Math.min(ses.duration, ses.currentTime + (e.key === 'ArrowRight' ? 5 : -5)));
     });
+    hiz.addEventListener('click', () => {
+      ses.playbackRate = hizlar[(hizlar.indexOf(ses.playbackRate) + 1) % hizlar.length];
+      hiz.textContent = `${String(ses.playbackRate).replace('.', ',')}×`;
+    });
+    ses.addEventListener('loadedmetadata', () => { if (ses.dataset.bekleyen) { ses.currentTime = +ses.dataset.bekleyen * ses.duration; delete ses.dataset.bekleyen; } });
+    ses.addEventListener('timeupdate', () => boya(oran()));
+    ses.addEventListener('play', () => { $$('audio').forEach(d => d !== ses && d.pause()); kap.classList.add('caliyor'); oynat.setAttribute('aria-label', 'Duraklat'); });
+    ses.addEventListener('pause', () => { kap.classList.remove('caliyor'); oynat.setAttribute('aria-label', 'Haberi dinle'); });
+    ses.addEventListener('ended', () => boya(0));
   });
-  $$('[data-ses-hiz]').forEach(secim => secim.addEventListener('change', () => {
-    const ses = $('audio', secim.closest('.sesli-haber'));
-    if (ses) ses.playbackRate = Number(secim.value);
-  }));
 
   // Tema
   const kok = document.documentElement;
   $$('[data-tema-dugme]').forEach(d => d.addEventListener('click', () => {
-    const koyuMu = kok.dataset.tema ? kok.dataset.tema === 'koyu' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const koyuMu = kok.dataset.tema === 'koyu';
     kok.dataset.tema = koyuMu ? 'acik' : 'koyu';
     try { localStorage.setItem('tema', kok.dataset.tema); } catch {}
   }));
@@ -43,7 +66,7 @@
     $$('dialog[open]').forEach(p => p.close());
     const p = document.getElementById(d.dataset.ac);
     p.showModal();
-    if (p.id === 'arama') { aramaHazirla(); $('#arama-girdi').focus(); }
+    if (p.id === 'arama') { aramaHazirla(); $('#arama-girdi').focus(); if (!$('#arama-girdi').value) dizin.then(sonYaz); }
   }));
   $$('dialog').forEach(p => p.addEventListener('click', e => { if (e.target === p) p.close(); }));
 
@@ -52,10 +75,11 @@
   const sonucAlani = $('.arama-sonuc');
   const normal = s => s.toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i');
   const kacis = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const satirHtml = h => `<a class="sonuc" href="${h.u}">${h.g ? `<img src="${h.g}" alt="" loading="lazy">` : '<span class="gorsel-yok"></span>'}<span><span class="sonuc-kategori">${kacis(h.k)} · ${new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' }).format(new Date(h.t))}</span><span class="sonuc-baslik">${kacis(h.b)}</span></span></a>`;
+  const sonYaz = liste => { sonucAlani.innerHTML = liste.length ? `<p class="arama-baslik">Son haberler</p>${liste.slice(0, 6).map(satirHtml).join('')}` : ''; };
   function aramaHazirla() {
     if (dizin) return;
     dizin = fetch(`${TABAN}/ara.json`).then(y => y.json()).then(l => {
-      $('[data-arama-sayi]').textContent = `${l.length} haber`;
       return l.map(h => {
         const baslik = normal(h.b);
         const govde = normal(`${h.b} ${h.s} ${h.k} ${h.e}`);
@@ -63,73 +87,130 @@
       });
     }).catch(() => { sonucAlani.innerHTML = '<p class="arama-bos">Arşiv şu anda yüklenemedi. Biraz sonra yeniden deneyin.</p>'; return []; });
   }
-  $$('[data-arama-oneri]').forEach(d => d.addEventListener('click', () => { const g = $('#arama-girdi'); g.value = d.dataset.aramaOneri; g.dispatchEvent(new Event('input')); g.focus(); }));
   $('#arama-girdi')?.addEventListener('input', async e => {
     const deger = e.target.value;
     const sorgu = normal(deger.trim());
-    if (sorgu.length < 2) { sonucAlani.innerHTML = '<p class="arama-bos">Bir başlık, kişi ya da konu yazın. Sonuçlar yazdıkça görünür.</p>'; return; }
+    if (sorgu.length < 2) { sonYaz(await dizin); return; }
     const kelimeler = sorgu.split(/\s+/);
     const liste = (await dizin).filter(h => kelimeler.every(k => h.sozcukler.some(x => x === k || k.length >= 7 && x.startsWith(k))))
       .sort((a, b) => kelimeler.filter(k => b.baslik.split(/[^a-z0-9]+/).includes(k)).length - kelimeler.filter(k => a.baslik.split(/[^a-z0-9]+/).includes(k)).length)
       .slice(0, 20);
     if (e.target.value !== deger) return;
-    sonucAlani.innerHTML = liste.length
-      ? liste.map(h => `<a class="sonuc" href="${h.u}">${h.g ? `<img src="${h.g}" alt="" loading="lazy">` : '<span class="gorsel-yok"></span>'}<span><span class="sonuc-kategori">${kacis(h.k)} · ${new Intl.DateTimeFormat('tr-TR', { day:'numeric',month:'short' }).format(new Date(h.t))}</span><span class="sonuc-baslik">${kacis(h.b)}</span></span></a>`).join('')
-      : `<p class="arama-bos">“${kacis(e.target.value)}” için sonuç bulunamadı. Daha kısa ya da farklı bir kelime deneyin.</p>`;
+    sonucAlani.innerHTML = liste.length ? liste.map(satirHtml).join('')
+      : `<p class="arama-bos">“${kacis(e.target.value)}” için sonuç bulunamadı.</p>`;
   });
   $('.arama-form')?.addEventListener('submit', e => {
     const ilk = $('.sonuc', sonucAlani);
     if (ilk) { e.preventDefault(); location.href = ilk.href; }
   });
 
-  // Arşiv soruları. Sunucu adresi tanımlanınca yanıtı güvenli uç nokta üretir;
-  // o zamana kadar doğrulanabilir haber eşleşmelerini gösterir.
-  const soruPanel = $('#soru-panel'), soruAc = $('[data-soru-ac]');
-  const soruKapat = () => { soruPanel.hidden = true; soruAc.setAttribute('aria-expanded', 'false'); soruAc.focus(); };
-  soruAc?.addEventListener('click', () => {
-    soruPanel.hidden = !soruPanel.hidden;
-    soruAc.setAttribute('aria-expanded', String(!soruPanel.hidden));
-    if (!soruPanel.hidden) $('#soru-girdi').focus();
-  });
-  if (soruPanel && $('.alt-alan')) new IntersectionObserver(([g]) => {
-    $('.soru-kutusu').classList.toggle('alt-gorunur', g.isIntersecting && soruPanel.hidden);
-  }, { threshold: .1 }).observe($('.alt-alan'));
-  $('[data-soru-kapat]')?.addEventListener('click', soruKapat);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && soruPanel && !soruPanel.hidden) soruKapat(); });
-  function mesajEkle(metin, tur = 'yanit', baglar = []) {
-    const kutu = document.createElement('div');
-    kutu.className = `soru-mesaj ${tur}`;
-    kutu.textContent = metin;
-    for (const b of baglar) {
-      if (!b.url?.startsWith(location.origin + TABAN + '/haber/')) continue;
-      const a = document.createElement('a'); a.href = b.url; a.textContent = b.baslik; kutu.append(a);
-    }
-    $('.soru-mesajlar').append(kutu);
-    kutu.scrollIntoView({ block: 'nearest', behavior: azHareket ? 'instant' : 'smooth' });
-  }
-  $('.soru-form')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const g = $('#soru-girdi'), dugme = $('.soru-form button');
-    const soru = g.value.trim(); if (!soru || soru.length > 350) return;
-    g.value = ''; dugme.disabled = true; mesajEkle(soru, 'kullanici');
-    try {
-      const adres = document.body.dataset.yardim;
-      if (adres) {
-        const y = await fetch(adres, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ soru, haber: document.body.dataset.haber || null }), signal: AbortSignal.timeout(16000) });
-        const cevap = await y.json();
-        if (!y.ok) throw new Error(cevap.hata || 'Yanıt alınamadı. Lütfen tekrar deneyin.');
-        mesajEkle(cevap.yanit, 'yanit', cevap.baglar || []);
-      } else {
-        const liste = await (aramaHazirla(), dizin);
-        const parcalar = normal(soru).split(/\W+/).filter(x => x.length > 2 && !['nedir','nasil','hangi','haber','hakkinda','ilgili','bugun','son'].includes(x));
-        const haber = document.body.dataset.haber;
-        const bulunan = liste.map(h => ({ ...h, puan: (haber && h.u.includes(`/haber/${haber}/`) ? 4 : 0) + parcalar.reduce((n, x) => n + (h.baslik.split(/[^a-z0-9]+/).includes(x) ? 3 : h.sozcukler.includes(x) ? 1 : 0), 0) })).filter(h => h.puan > 0).sort((a, b) => b.puan - a.puan).slice(0, 3);
-        if (bulunan.length) mesajEkle('Arşivimizde bu konuyla ilişkili haberler var. Ayrıntı ve kaynaklar için haberleri açın:', 'yanit', bulunan.map(h => ({ baslik: h.b, url: new URL(h.u, location.origin).href })));
-        else mesajEkle('Bu soruya dayanak oluşturacak bir haber bulamadım. Başlık, kişi veya konuyu başka sözcüklerle sorabilirsiniz.');
+  // Soru çubuğu: yazıp gönderince yüzey yukarı doğru açılır, yanıt akarak gelir.
+  const soru = $('[data-soru]');
+  if (soru) {
+    const girdi = $('#soru-girdi', soru), gonder = $('.soru-gonder', soru), mesajlar = $('.soru-mesajlar', soru);
+    const adres = document.body.dataset.yardim;
+    let mesgul = false;
+    const ac = () => { if (mesajlar.childElementCount) soru.classList.add('acik'); };
+    const kapat = () => soru.classList.remove('acik');
+    const asagi = () => { mesajlar.scrollTop = mesajlar.scrollHeight; };
+    girdi.addEventListener('input', () => { gonder.disabled = mesgul || girdi.value.trim().length < 3; });
+    girdi.addEventListener('focus', ac);
+    $('.soru-kapat', soru).addEventListener('click', kapat);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && soru.classList.contains('acik')) { kapat(); girdi.blur(); } });
+    document.addEventListener('pointerdown', e => { if (!soru.contains(e.target)) kapat(); });
+
+    const balon = (sinif, metin = '') => {
+      const d = document.createElement('div');
+      d.className = `soru-mesaj ${sinif}`;
+      d.textContent = metin;
+      mesajlar.append(d);
+      return d;
+    };
+    const kaynakEkle = (kutu, liste) => {
+      const izinli = liste.filter(k => typeof k.url === 'string' && /^https:\/\/[^/]+\/haber\/[a-z0-9-]+\/$/.test(k.url));
+      if (!izinli.length) return;
+      const alan = document.createElement('div');
+      alan.className = 'soru-kaynaklar';
+      for (const k of izinli) {
+        const a = document.createElement('a');
+        a.href = new URL(k.url).pathname.replace(/^/, TABAN);
+        a.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>';
+        const s = document.createElement('span'); s.textContent = k.baslik; a.prepend(s);
+        alan.append(a);
       }
-    } catch (hata) { mesajEkle(hata.message || 'Yanıt alınamadı. Lütfen tekrar deneyin.'); }
-    finally { dugme.disabled = false; g.focus(); }
-  });
+      kutu.append(alan);
+    };
+
+    // Gelen metni karakter karakter yazar; akış hızlansa da göz yormaz.
+    function yazici(kutu) {
+      let kuyruk = '', bitti = false, coz;
+      const son = new Promise(r => { coz = r; });
+      const metin = document.createTextNode('');
+      kutu.replaceChildren(metin);
+      const adim = () => {
+        if (kuyruk) {
+          const al = Math.max(1, Math.ceil(kuyruk.length / 12));
+          metin.data += kuyruk.slice(0, al); kuyruk = kuyruk.slice(al);
+          asagi();
+        }
+        if (kuyruk || !bitti) requestAnimationFrame(adim); else coz();
+      };
+      requestAnimationFrame(adim);
+      return { ekle: t => { kuyruk += azHareket ? '' : t; if (azHareket) metin.data += t; }, bitir: () => { bitti = true; return son; } };
+    }
+
+    $('.soru-cubuk', soru).addEventListener('submit', async e => {
+      e.preventDefault();
+      const metin = girdi.value.trim();
+      if (mesgul || metin.length < 3 || !adres) return;
+      mesgul = true; gonder.disabled = true; girdi.value = '';
+      balon('kullanici', metin);
+      const kutu = balon('yanit');
+      kutu.innerHTML = '<span class="soru-yaziyor" aria-label="Yanıt hazırlanıyor"><i></i><i></i><i></i></span>';
+      soru.classList.add('acik');
+      asagi();
+      let kaynaklar = [];
+      try {
+        const y = await fetch(adres.replace(/\/$/, '') + '/sor', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ soru: metin, haber: document.body.dataset.haber || null }),
+          signal: AbortSignal.timeout(30000),
+        });
+        if (!y.ok || !y.headers.get('content-type')?.includes('event-stream')) {
+          const j = await y.json().catch(() => ({}));
+          throw new Error(j.hata || 'Yanıt alınamadı. Biraz sonra yeniden deneyin.');
+        }
+        const okuyucu = y.body.getReader(), cozucu = new TextDecoder();
+        const yaz = yazici(kutu);
+        let tampon = '', olay = 'message', kesildi = false;
+        for (;;) {
+          const { value, done } = await okuyucu.read();
+          if (done) break;
+          tampon += cozucu.decode(value, { stream: true });
+          const parcalar = tampon.split('\n\n');
+          tampon = parcalar.pop();
+          for (const p of parcalar) {
+            olay = /^event: (.+)$/m.exec(p)?.[1] || 'message';
+            const veri = /^data: (.*)$/m.exec(p)?.[1];
+            if (veri == null) continue;
+            if (olay === 'kaynak') kaynaklar = JSON.parse(veri);
+            else if (olay === 'kes') kesildi = true;
+            else if (olay === 'message') yaz.ekle(JSON.parse(veri));
+          }
+        }
+        await yaz.bitir();
+        if (kesildi) kutu.textContent = 'Yalnızca gazetemizdeki haberler hakkında yardımcı olabilirim.';
+        else if (!kutu.textContent.trim()) kutu.textContent = 'Bu soruya haberlerimizde bir yanıt bulamadım.';
+        else kaynakEkle(kutu, kaynaklar);
+      } catch (hata) {
+        kutu.classList.add('hata');
+        kutu.textContent = hata.name === 'TimeoutError' ? 'Yanıt gecikti. Biraz sonra yeniden deneyin.' : hata.message;
+      } finally {
+        mesgul = false; asagi();
+        gonder.disabled = girdi.value.trim().length < 3;
+      }
+    });
+  }
 
   // Kopyala
   $$('[data-kopyala]').forEach(d => d.addEventListener('click', async () => {

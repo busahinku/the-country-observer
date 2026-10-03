@@ -1,5 +1,5 @@
 ---
-baslik: Değerli metallerde dokuz aylık tablo: Dolar ve faiz baskısı
+baslik: Altın ve gümüşte dokuz aylık bilanço: Dolar ve faiz baskısı kayıp getirdi
 spot: Altın, gümüş, platin ve paladyum, yılın ilk dokuz ayında güçlü dalgalanmaların ardından değer kayıpları yaşadı. Kaynakların piyasa değerlendirmelerinde yükselen tahvil faizleri, dolar talebi ve jeopolitik gelişmeler öne çıkıyor.
 kategori: analiz
 yazar: Haber Merkezi

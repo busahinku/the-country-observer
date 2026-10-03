@@ -1,5 +1,5 @@
 ---
-baslik: İnme görüntülerini inceleyen yerli karar destek sistemi tanıtıldı
+baslik: Acil serviste yerli yapay zekâ: İnme bulgularını hekime öncelikli bildiren sistem
 spot: TÜSEB’in yapay zekâ destekli RadAI-STK sistemi, TEKNOFEST Güneydoğu’da ziyaretçilere tanıtılıyor. Uygulama, acil serviste çekilen beyin görüntülerini analiz ederek kritik bulguları hekim ekibine öncelikli bildirmeyi amaçlıyor.
 kategori: saglik
 yazar: Haber Merkezi
@@ -7,7 +7,8 @@ tarih: 2026-10-03T08:14:28.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: medical hospital equipment
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Brain CT Scan for Stroke Diagnosis.jpg
+gorsel_aciklama: İnme tanısında kullanılan beyin BT görüntüsü; temsili görsel.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/bilim-teknoloji/sagliktaki-milli-teknoloji-urunleri-teknofestte-vitrine-cikti/4076788"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/gundem/teknofestte-saglik-teknolojileri-vitrine-cikti-958907.html"}]
 ---
 TÜSEB’in yapay zekâ destekli RadAI-STK sistemi, TEKNOFEST Güneydoğu’da ziyaretçilere tanıtılıyor. Uygulama, acil serviste çekilen beyin görüntülerini analiz ederek kritik bulguları hekim ekibine öncelikli bildirmeyi amaçlıyor.

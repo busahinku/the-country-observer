@@ -1,5 +1,5 @@
 ---
-baslik: Rüzgâr projelerinde teknik değerlendirme kuralları yenilendi
+baslik: Rüzgâr santrali başvurularında kurallar değişti
 spot: Rüzgâr enerjisi başvurularının teknik inceleme şartlarını değiştiren yönetmelik Resmî Gazete’de yayımlandı. Düzenleme, santral sahalarının başka enerji projeleri ve yenilenebilir enerji alanlarıyla kesişmesine ilişkin değerlendirmeyi genişletiyor.
 kategori: ekonomi
 yazar: Haber Merkezi

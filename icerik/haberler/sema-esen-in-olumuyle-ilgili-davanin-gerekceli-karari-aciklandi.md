@@ -1,5 +1,5 @@
 ---
-baslik: Sema Esen’in ölümüyle ilgili davanın gerekçeli kararı açıklandı
+baslik: Aleyna Çakır davasında gerekçeli karar açıklandı
 spot: Kamuoyunun Aleyna Çakır adıyla tanıdığı Sema Esen’in ölümüne ilişkin davada gerekçeli karar yayımlandı. Ankara 34. Ağır Ceza Mahkemesi, Ümitcan Uygun’a verilen dört yıllık hapis cezasının dayanaklarını kararda anlattı.
 kategori: gundem
 yazar: Haber Merkezi

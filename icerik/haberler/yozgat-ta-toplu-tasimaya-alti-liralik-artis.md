@@ -1,5 +1,5 @@
 ---
-baslik: Yozgat’ta toplu taşımaya altı liralık artış
+baslik: Yozgat’ta otobüs bileti 41 lira oldu
 spot: Yozgat’ta şehir içi toplu taşımada yeni tarife kabul edildi. Altı liralık artışla tam biniş 41, öğrenci binişi 33 lira olarak belirlendi. Banka veya kredi kartıyla binişin bedeli ise 46 lira olacak.
 kategori: yasam
 yazar: Haber Merkezi

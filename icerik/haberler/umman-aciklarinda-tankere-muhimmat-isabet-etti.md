@@ -1,5 +1,5 @@
 ---
-baslik: Umman açıklarında tankere mühimmat isabet etti
+baslik: Hürmüz çıkışında tankere saldırı: Kaynağı belirsiz mühimmat isabet etti
 spot: İngiltere Deniz Ticaret Operasyonları, Hürmüz Boğazı’ndan çıkış yapan bir petrol tankerinin kaynağı belirlenemeyen mühimmatla vurulduğunu bildirdi. Açıklama, gemi kaptanından alınan ihbara dayanıyor.
 kategori: dunya
 yazar: Haber Merkezi

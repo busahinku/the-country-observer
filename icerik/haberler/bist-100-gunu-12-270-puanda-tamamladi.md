@@ -1,5 +1,5 @@
 ---
-baslik: BIST 100 günü 12.270 puanda tamamladı
+baslik: Borsa haftanın son gününde toparlandı: BIST 100 12.270 puanda
 spot: Borsa İstanbul’da BIST 100 endeksi, son işlem gününü yüzde 0,17 artışla 12.270,18 puandan kapattı. Önceki kapanışa göre 21,14 puan yükselen endekste toplam işlem hacmi 124,8 milyar lira oldu.
 kategori: ekonomi
 yazar: Haber Merkezi

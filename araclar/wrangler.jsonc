@@ -3,9 +3,11 @@
   "main": "yardim-worker.mjs",
   "compatibility_date": "2026-10-03",
   "workers_dev": true,
+  "routes": [{ "pattern": "yardim.busahin.com", "custom_domain": true }],
+  "ai": { "binding": "AI" },
   "vars": { "SITE_ORIGIN": "https://haber.busahin.com", "SITE_URL": "https://haber.busahin.com" },
   "ratelimits": [
     { "name": "SORU_SINIRI", "namespace_id": "294071", "simple": { "limit": 5, "period": 60 } },
-    { "name": "TOPLAM_SINIR", "namespace_id": "294072", "simple": { "limit": 40, "period": 60 } }
+    { "name": "TOPLAM_SINIR", "namespace_id": "294072", "simple": { "limit": 30, "period": 60 } }
   ]
 }

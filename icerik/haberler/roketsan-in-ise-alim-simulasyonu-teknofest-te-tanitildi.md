@@ -1,5 +1,5 @@
 ---
-baslik: ROKETSAN’ın işe alım simülasyonu TEKNOFEST’te tanıtıldı
+baslik: ROKETSAN’da iş görüşmesi simülasyonla: R-NOVA TEKNOFEST’te
 spot: ROKETSAN, işe alım görüşmelerini desteklemek amacıyla geliştirdiği R-NOVA simülasyonunu TEKNOFEST Güneydoğu’da sergiliyor. Şanlıurfa GAP Havalimanı’ndaki etkinlikte ziyaretçiler uygulamayı deneyebiliyor.
 kategori: teknoloji
 yazar: Haber Merkezi
@@ -7,7 +7,8 @@ tarih: 2026-10-03T10:49:00.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: electronic circuit board
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Missile Rocketsan Teknofest2023 (1).jpg
+gorsel_aciklama: ROKETSAN’ın TEKNOFEST 2023 alanındaki standından arşiv fotoğrafı.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/bilim-teknoloji/roketsanin-r-nova-simulasyonu-ise-alim-sureclerinde-kolaylik-saglayacak/4076816"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/bilim-teknoloji/roketsan-r-nova-ise-alim-sureclerinde-kolaylik-saglayacak-959011.html"}]
 ---
 ROKETSAN, işe alım görüşmelerini desteklemek amacıyla geliştirdiği R-NOVA simülasyonunu TEKNOFEST Güneydoğu’da sergiliyor. Şanlıurfa GAP Havalimanı’ndaki etkinlikte ziyaretçiler uygulamayı deneyebiliyor.

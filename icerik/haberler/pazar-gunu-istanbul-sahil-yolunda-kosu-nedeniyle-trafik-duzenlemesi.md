@@ -1,5 +1,5 @@
 ---
-baslik: Pazar günü İstanbul sahil yolunda koşu nedeniyle trafik düzenlemesi
+baslik: Pazar günü Kennedy Caddesi’nin sahil bölümü trafiğe kapanıyor
 spot: İstanbul’da 4 Ekim Pazar günü yapılacak İstanbul’u Koşuyorum Avrupa Etabı nedeniyle Yenikapı–Sarayburnu sahil güzergâhında yollar araç trafiğine kapatılacak. Kennedy Caddesi’nin sahil bölümü düzenlemeden etkilenecek.
 kategori: yasam
 yazar: Haber Merkezi

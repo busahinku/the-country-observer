@@ -1,5 +1,5 @@
 ---
-baslik: Gaziantep’te dokuz günlük kültür ve gastronomi buluşması
+baslik: Gaziantep’te dokuz günlük lezzet ve kültür şöleni: 246 etkinlik
 spot: GastroAntep Kültür Yolu Festivali Gaziantep’te başladı. Türkiye Kültür Yolu Festivali’nin bu yılki 21. durağı olan kentte, 3–11 Ekim arasında 14 ayrı mekânda 246 etkinlik yapılması planlanıyor.
 kategori: kultur-sanat
 yazar: Haber Merkezi

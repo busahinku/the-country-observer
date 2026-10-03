@@ -1,5 +1,5 @@
 ---
-baslik: Tele2 Haber lisans ücretini karşılayamadığı için yayınlarını bitiriyor
+baslik: Tele2 Haber ekranlarını kapatıyor: 2 milyon liralık lisans bedeli ödenemedi
 spot: Tele2 Haber, RTÜK’ün talep ettiği lisans bedelini karşılayamadığını açıklayarak yayınlarını sonlandırma kararı aldı. Programcı Murat Taylan, toplam iki milyon liralık lisans talebinin mevcut ekonomik koşullarda ödenemediğini söyledi.
 kategori: gundem
 yazar: Haber Merkezi

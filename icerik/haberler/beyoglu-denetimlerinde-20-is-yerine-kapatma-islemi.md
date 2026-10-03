@@ -1,5 +1,5 @@
 ---
-baslik: Beyoğlu denetimlerinde 20 iş yerine kapatma işlemi
+baslik: Beyoğlu’nda turist bölgesine denetim: 20 iş yeri kapatıldı, 11 aranan yakalandı
 spot: Beyoğlu’nda turistlerin yoğun bulunduğu alanlarda yapılan denetimlerde 20 işletme hakkında kapatma işlemi uygulandı. Kontroller sırasında çeşitli suçlardan aranan 11 kişi yakalandı; eğlence mekânlarına toplam 725 bin lira idari para cezası kesildi.
 kategori: gundem
 yazar: Haber Merkezi

@@ -1,5 +1,5 @@
 ---
-baslik: Türkiye, Belçika deplasmanından 3–0 yenilgiyle döndü
+baslik: Liege’de ağır yenilgi: Belçika 3, Türkiye 0
 spot: A Milli Futbol Takımı, UEFA Uluslar A Ligi 1. Grup’taki üçüncü karşılaşmasında Belçika’ya 3–0 yenildi. Liege’de oynanan maçın ilk yarısı ev sahibinin 1–0 üstünlüğüyle tamamlandı.
 kategori: spor
 yazar: Haber Merkezi

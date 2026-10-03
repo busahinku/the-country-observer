@@ -1,104 +1,240 @@
-// Kaynağı ve güncellenme zamanı görünen piyasa verileri.
+// Piyasa bandı (ana sayfa) ve etkileşimli grafik (piyasalar sayfası).
+// Veri, Worker üzerinden önbellekli gelir; kaynak Yahoo Finance.
 (() => {
-  const sec = (s, k = document) => k.querySelector(s);
-  const hepsi = (s, k = document) => [...k.querySelectorAll(s)];
-  if (!sec('[data-piyasa-ozet]') && !sec('[data-piyasa-sec]')) return;
-  const varliklar = {
-    altin: { ad: 'Ons altın', kod: 'XAU', birim: 'USD / ons', metal: true },
-    gumus: { ad: 'Ons gümüş', kod: 'XAG', birim: 'USD / ons', metal: true },
-    dolar: { ad: 'Dolar / TL', kod: 'USD', birim: 'TL', metal: false },
-    avro: { ad: 'Avro / TL', kod: 'EUR', birim: 'TL', metal: false },
+  const API = (document.body.dataset.yardim || '').replace(/\/$/, '');
+  if (!API) return;
+  const $ = (s, k = document) => k.querySelector(s);
+  const $$ = (s, k = document) => [...k.querySelectorAll(s)];
+  const DOGAL = { xu100: 'TRY', xu030: 'TRY', usdtry: 'TRY', eurtry: 'TRY', gbptry: 'TRY', 'gram-altin': 'TRY', 'ons-altin': 'USD', 'gram-gumus': 'TRY', 'ons-gumus': 'USD', brent: 'USD', bitcoin: 'USD', ethereum: 'USD', sp500: 'USD' };
+  const KUR = new Set(['usdtry', 'eurtry', 'gbptry']);
+  const ENDEKS = new Set(['xu100', 'xu030', 'sp500']);
+  const azHareket = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const ondalik = v => Math.abs(v) >= 100 ? 2 : Math.abs(v) >= 1 ? (Math.abs(v) >= 10 ? 2 : 4) : 4;
+  const sayi = (v, b = ondalik(v)) => v.toLocaleString('tr-TR', { minimumFractionDigits: b, maximumFractionDigits: b });
+  const fiyat = (v, id, para) => {
+    if (!Number.isFinite(v)) return '—';
+    if (ENDEKS.has(id) && para === DOGAL[id]) return sayi(v);
+    return para === 'USD' ? `$${sayi(v)}` : `${sayi(v)} ₺`;
   };
-  const yaz = (s, d) => { const e = sec(s); if (e) e.textContent = d; };
-  const sayi = (n, hane = 2) => new Intl.NumberFormat('tr-TR', { minimumFractionDigits: hane, maximumFractionDigits: hane }).format(n);
-  const tarih = t => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' }).format(new Date(t));
-  const tarihKisa = t => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', timeZone: 'Europe/Istanbul' }).format(new Date(t));
-  const sure = ms => AbortSignal.timeout(ms);
-  const veri = {};
-  let secili = ['altin', 'gumus', 'dolar', 'avro'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'altin';
-  let aralik = '24h', sira = 0;
+  const yuzde = (son, ilk) => Number.isFinite(son) && Number.isFinite(ilk) && ilk ? (son - ilk) / ilk * 100 : NaN;
+  const farkYaz = (el, oran) => {
+    el.classList.toggle('artis', oran >= 0);
+    el.classList.toggle('azalis', oran < 0);
+    el.textContent = Number.isFinite(oran) ? `%${sayi(Math.abs(oran), 2)}` : '';
+  };
+  const getir = async yol => {
+    const y = await fetch(`${API}${yol}`, { signal: AbortSignal.timeout(12000) });
+    if (!y.ok) throw new Error('veri yok');
+    return y.json();
+  };
+  let ozetSozu;
+  const ozet = () => ozetSozu ||= getir('/piyasa/ozet');
 
-  async function ozetleriYukle() {
-    const [m, d] = await Promise.allSettled([
-      fetch('https://standardbullion.com/spot-prices.json', { signal: sure(9000) }).then(r => { if (!r.ok) throw Error(); return r.json(); }),
-      fetch('https://open.er-api.com/v6/latest/USD', { signal: sure(9000) }).then(r => { if (!r.ok) throw Error(); return r.json(); }),
-    ]);
-    if (m.status === 'fulfilled') {
-      const a = m.value;
-      for (const [id, kod] of [['altin', 'XAU'], ['gumus', 'XAG']]) {
-        const x = a.metals?.find(v => v.symbol === kod);
-        if (x && Number.isFinite(x.ask)) veri[id] = { deger: x.ask, degisim: x.changeToday?.percent, acilis: x.open, alis: x.bid, hafta: x.changes?.['1w'], ay: x.changes?.['1m'], zaman: a.updated, kaynak: 'Standard Bullion' };
+  // ---------- Ana sayfa bandı ----------
+  const bant = $('[data-borsa-bandi]');
+  if (bant) {
+    ozet().then(liste => {
+      for (const x of liste) {
+        const el = $(`[data-borsa="${x.id}"]`, bant);
+        if (!el) continue;
+        if (x.hata || !Number.isFinite(x.fiyat)) { el.remove(); continue; }
+        $('.borsa-deger', el).textContent = fiyat(x.fiyat, x.id, x.para);
+        farkYaz($('.borsa-fark', el), yuzde(x.fiyat, x.onceki));
       }
-    }
-    if (d.status === 'fulfilled' && d.value.result === 'success') {
-      const x = d.value;
-      const z = new Date(x.time_last_update_unix * 1000).toISOString();
-      if (Number.isFinite(x.rates?.TRY)) veri.dolar = { deger: x.rates.TRY, zaman: z, kaynak: 'ExchangeRate-API' };
-      if (Number.isFinite(x.rates?.EUR) && veri.dolar) veri.avro = { deger: x.rates.TRY / x.rates.EUR, zaman: z, kaynak: 'ExchangeRate-API' };
-    }
-    hepsi('[data-piyasa-ozet]').forEach(e => {
-      const id = e.dataset.piyasaOzet, x = veri[id];
-      if (!x) { e.querySelector('strong').textContent = 'Veri yok'; return; }
-      e.querySelector('strong').textContent = `${sayi(x.deger, id === 'altin' || id === 'gumus' ? 2 : 4)} ${id === 'altin' || id === 'gumus' ? '$' : '₺'}`;
-      const alt = e.querySelector('.piyasa-ozet-alt');
-      alt.textContent = x.degisim == null ? `Günlük referans · ${tarihKisa(x.zaman)}` : `${x.degisim > 0 ? '+' : ''}${sayi(x.degisim)}% · son işlem`;
-      alt.classList.toggle('artis', x.degisim > 0);
-      alt.classList.toggle('azalis', x.degisim < 0);
-    });
-    hepsi('[data-piyasa-zaman]').forEach(e => { e.textContent = 'Metaller: son işlem fiyatı · Döviz: günlük referans kuru'; });
-    ayrinti();
+      bant.classList.remove('yukleniyor');
+      if (azHareket) return;
+      const iz = $('.borsa-iz', bant);
+      for (const el of [...iz.children]) {
+        const kopya = el.cloneNode(true);
+        kopya.setAttribute('aria-hidden', 'true');
+        kopya.tabIndex = -1;
+        iz.append(kopya);
+      }
+      iz.style.setProperty('--borsa-sure', `${Math.round(iz.scrollWidth / 2 / 38)}s`);
+    }).catch(() => bant.remove());
   }
 
-  function ciz(noktalar, birim) {
-    const alan = sec('[data-piyasa-cizim]');
-    if (!alan) return;
-    if (noktalar.length < 2) { alan.innerHTML = '<p>Bu aralık için yeterli veri bulunamadı.</p>'; return; }
-    const degerler = noktalar.map(x => x.price), dusuk = Math.min(...degerler), yuksek = Math.max(...degerler);
-    const fark = Math.max(yuksek - dusuk, yuksek * .002);
-    const k = (x, i) => `${(i / (noktalar.length - 1) * 1000).toFixed(2)},${(245 - (x.price - dusuk + fark * .12) / (fark * 1.24) * 245).toFixed(2)}`;
-    const yol = noktalar.map(k).join(' ');
-    const son = yol.split(' ').at(-1).split(',');
-    alan.innerHTML = `<svg viewBox="0 0 1000 260" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="65" x2="1000" y2="65"/><line x1="0" y1="130" x2="1000" y2="130"/><line x1="0" y1="195" x2="1000" y2="195"/><polyline points="${yol}"/><circle cx="${son[0]}" cy="${son[1]}" r="5"/></svg><span class="gizli">${tarihKisa(noktalar[0].t)} tarihinde ${sayi(noktalar[0].price)} ${birim}; ${tarihKisa(noktalar.at(-1).t)} tarihinde ${sayi(noktalar.at(-1).price)} ${birim}.</span>`;
-    yaz('[data-piyasa-ilk]', tarihKisa(noktalar[0].t));
-    yaz('[data-piyasa-son]', tarihKisa(noktalar.at(-1).t));
+  // ---------- Piyasalar sayfası ----------
+  const sayfa = $('.borsa-sayfa');
+  if (!sayfa || !window.LightweightCharts) return;
+  const LC = window.LightweightCharts;
+  const ETIKET = { '1g': 'Bugün', '1h': 'Son 1 hafta', '1a': 'Son 1 ay', '3a': 'Son 3 ay', '1y': 'Son 1 yıl', '5y': 'Son 5 yıl' };
+  const IST = 3 * 3600; // Türkiye saati sabit UTC+3
+  const durum = { id: null, aralik: '1g', para: 'TRY', veri: null, istek: 0 };
+  const el = {
+    fiyat: $('[data-fiyat]', sayfa), fark: $('.borsa-fiyat-alt [data-fark]', sayfa), etiket: $('[data-etiket]', sayfa),
+    ad: $('[data-ad]', sayfa), kimlik: $('[data-kimlik]', sayfa), grafik: $('[data-grafik]', sayfa), secim: $('.borsa-secim', sayfa),
+    onceki: $('[data-onceki]', sayfa), gun: $('[data-gun]', sayfa), yil: $('[data-yil]', sayfa),
+    aralik: $('[data-segment="Aralık"]', sayfa), para: $('[data-segment="Para birimi"]', sayfa),
+  };
+  const renk = ad => getComputedStyle(document.documentElement).getPropertyValue(ad).trim();
+  const saydam = (hex, a) => { const n = parseInt(hex.replace('#', ''), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+  const tarihYaz = (t, gunIci) => new Intl.DateTimeFormat('tr-TR', gunIci
+    ? { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }
+    : { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(t * 1000));
+
+  const grafik = LC.createChart(el.grafik, {
+    autoSize: true,
+    layout: { background: { type: 'solid', color: 'transparent' }, fontFamily: 'Inter, system-ui, sans-serif', fontSize: 11, attributionLogo: true },
+    grid: { vertLines: { visible: false } },
+    rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.14, bottom: 0.06 } },
+    timeScale: { borderVisible: false, fixLeftEdge: true, fixRightEdge: true, lockVisibleTimeRangeOnResize: true,
+      tickMarkFormatter: (t, tur) => new Intl.DateTimeFormat('tr-TR', tur >= 3 ? { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' } : tur === 0 ? { year: 'numeric', timeZone: 'UTC' } : tur === 1 ? { month: 'short', timeZone: 'UTC' } : { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(t * 1000)) },
+    crosshair: { mode: LC.CrosshairMode.Magnet, horzLine: { visible: false, labelVisible: false }, vertLine: { width: 1, style: LC.LineStyle.Dashed, labelVisible: false } },
+    handleScroll: false, handleScale: false,
+    localization: { locale: 'tr-TR', priceFormatter: v => sayi(v) },
+  });
+  const seri = grafik.addSeries(LC.AreaSeries, { lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerRadius: 4, crosshairMarkerBorderWidth: 2 });
+  const temaUygula = () => {
+    const soluk = renk('--soluk'), cizgi = renk('--cizgi');
+    grafik.applyOptions({ layout: { textColor: soluk }, grid: { horzLines: { color: cizgi } }, crosshair: { vertLine: { color: soluk } } });
+    if (durum.veri) renkle();
+  };
+  new MutationObserver(temaUygula).observe(document.documentElement, { attributes: true, attributeFilter: ['data-tema'] });
+
+  const noktalar = () => durum.veri?.noktalar || [];
+  const baslangic = () => durum.aralik === '1g' && Number.isFinite(durum.veri?.onceki) ? durum.veri.onceki : noktalar()[0]?.[1];
+  function renkle() {
+    const n = noktalar(), artis = (n.at(-1)?.[1] ?? 0) >= (baslangic() ?? 0);
+    const r = renk(artis ? '--artis' : '--azalis');
+    seri.applyOptions({ lineColor: r, topColor: saydam(r, .2), bottomColor: saydam(r, 0), crosshairMarkerBackgroundColor: r, crosshairMarkerBorderColor: renk('--zemin') });
+    el.secim.style.setProperty('--secim-renk', r);
+  }
+  // Başlık: fiyat, değişim ve etiket. Gezinme ve ölçüm sırasında geçici olarak değişir.
+  function baslik(deger, ilk, etiket) {
+    const { id, para } = durum;
+    el.fiyat.textContent = fiyat(deger, id, para);
+    const fark = deger - ilk;
+    farkYaz(el.fark, yuzde(deger, ilk));
+    if (Number.isFinite(fark)) el.fark.textContent = `${fark >= 0 ? '+' : '−'}${sayi(Math.abs(fark))} (${el.fark.textContent})`;
+    el.etiket.textContent = etiket;
+  }
+  const varsayilanBaslik = () => {
+    const v = durum.veri;
+    if (!v) return;
+    const son = durum.aralik === '1g' ? v.fiyat : noktalar().at(-1)?.[1] ?? v.fiyat;
+    const saat = durum.aralik === '1g' && v.zaman ? ` · ${new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' }).format(new Date(v.zaman * 1000))}` : '';
+    baslik(son, baslangic(), ETIKET[durum.aralik] + saat);
+  };
+
+  function segmentSec(seg, deger) {
+    for (const b of $$('button', seg)) b.setAttribute('aria-pressed', String(b.dataset.deger === deger));
+    const b = $('[aria-pressed="true"]', seg), imlec = $('.segment-imlec', seg);
+    if (b && imlec) { imlec.style.width = `${b.offsetWidth}px`; imlec.style.transform = `translateX(${b.offsetLeft - 3}px)`; }
   }
 
-  async function ayrinti() {
-    if (!sec('[data-piyasa-sec]')) return;
-    const anlikSira = ++sira, a = varliklar[secili], v = veri[secili];
-    hepsi('[data-piyasa-sec]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.piyasaSec === secili)));
-    if (!a.metal && aralik === '24h') aralik = '7d';
-    hepsi('[data-piyasa-aralik]').forEach(b => { b.disabled = !a.metal && b.dataset.piyasaAralik === '24h'; b.setAttribute('aria-pressed', String(b.dataset.piyasaAralik === aralik)); });
-    yaz('[data-piyasa-ad]', `${a.ad} · ${a.birim}`);
-    yaz('[data-piyasa-deger]', v ? `${sayi(v.deger, a.metal ? 2 : 4)} ${a.metal ? '$' : '₺'}` : 'Veri bekleniyor');
-    yaz('[data-piyasa-degisim]', v ? (v.degisim == null ? `Günlük referans · ${tarih(v.zaman)}` : `${v.degisim > 0 ? '+' : ''}${sayi(v.degisim)}% bugün · ${tarih(v.zaman)}`) : 'Kaynak yanıtı bekleniyor');
-    yaz('[data-piyasa-acilis]', Number.isFinite(v?.acilis) ? sayi(v.acilis) : 'Açıklanmıyor');
-    yaz('[data-piyasa-alis]', Number.isFinite(v?.alis) ? sayi(v.alis) : 'Açıklanmıyor');
-    yaz('[data-piyasa-hafta]', Number.isFinite(v?.hafta) ? `${v.hafta > 0 ? '+' : ''}${sayi(v.hafta)}%` : '—');
-    yaz('[data-piyasa-ay]', Number.isFinite(v?.ay) ? `${v.ay > 0 ? '+' : ''}${sayi(v.ay)}%` : '—');
-    const alan = sec('[data-piyasa-cizim]');
-    alan.innerHTML = '<p>Grafik yükleniyor…</p>';
+  async function yukle() {
+    const sira = ++durum.istek;
+    el.grafik.classList.add('yukleniyor');
+    olcuTemizle();
     try {
-      let noktalar;
-      if (a.metal) {
-        const y = await fetch(`https://standardbullion.com/api/v1/market/history?metal=${a.kod}&range=${aralik}`, { signal: sure(10000) });
-        if (!y.ok) throw Error();
-        noktalar = (await y.json()).points.filter(p => Number.isFinite(p.price));
-      } else {
-        const gun = aralik === '7d' ? 10 : 40;
-        const bas = new Date(Date.now() - gun * 86400000).toISOString().slice(0, 10);
-        const son = new Date().toISOString().slice(0, 10);
-        const y = await fetch(`https://api.frankfurter.dev/v1/${bas}..${son}?base=USD&symbols=TRY,EUR`, { signal: sure(10000) });
-        if (!y.ok) throw Error();
-        const gecmis = (await y.json()).rates;
-        noktalar = Object.entries(gecmis).map(([t, x]) => ({ t, price: secili === 'dolar' ? x.TRY : x.TRY / x.EUR })).filter(p => Number.isFinite(p.price));
-      }
-      if (anlikSira === sira) ciz(noktalar, a.birim);
-    } catch { if (anlikSira === sira) alan.innerHTML = '<p>Geçmiş veriler şu anda alınamadı. Daha sonra yeniden deneyin.</p>'; }
+      const v = await getir(`/piyasa/grafik?id=${durum.id}&aralik=${durum.aralik}&para=${durum.para}`);
+      if (sira !== durum.istek) return;
+      durum.veri = v;
+      $('.borsa-hata', el.grafik)?.remove();
+      seri.setData(v.noktalar.map(([t, d]) => ({ time: t + IST, value: d })));
+      grafik.timeScale().fitContent();
+      grafik.applyOptions({ timeScale: { timeVisible: ['1g', '1h', '1a'].includes(durum.aralik) } });
+      renkle();
+      varsayilanBaslik();
+      el.onceki.textContent = fiyat(v.onceki, v.id, v.para);
+      el.gun.textContent = Number.isFinite(v.gunDusuk) ? `${fiyat(v.gunDusuk, v.id, v.para)} – ${fiyat(v.gunYuksek, v.id, v.para)}` : '—';
+      el.yil.textContent = Number.isFinite(v.yilDusuk) ? `${fiyat(v.yilDusuk, v.id, v.para)} – ${fiyat(v.yilYuksek, v.id, v.para)}` : '—';
+    } catch {
+      if (sira !== durum.istek) return;
+      seri.setData([]);
+      if (!$('.borsa-hata', el.grafik)) el.grafik.insertAdjacentHTML('beforeend', '<p class="borsa-hata">Veri şu anda alınamadı. Biraz sonra yeniden deneyin.</p>');
+    } finally { if (sira === durum.istek) el.grafik.classList.remove('yukleniyor'); }
   }
-  hepsi('[data-piyasa-sec]').forEach(b => b.addEventListener('click', () => { secili = b.dataset.piyasaSec; location.hash = secili; ayrinti(); }));
-  hepsi('[data-piyasa-aralik]').forEach(b => b.addEventListener('click', () => { if (b.disabled) return; aralik = b.dataset.piyasaAralik; ayrinti(); }));
-  addEventListener('hashchange', () => { const id = location.hash.slice(1); if (varliklar[id] && id !== secili) { secili = id; ayrinti(); } });
-  ozetleriYukle();
-  setInterval(ozetleriYukle, 60000);
+
+  function varlikSec(id, ilk = false) {
+    if (!DOGAL[id]) id = 'xu100';
+    durum.id = id;
+    durum.para = DOGAL[id];
+    for (const b of $$('[data-borsa-sec]', sayfa)) b.setAttribute('aria-selected', String(b.dataset.borsaSec === id));
+    const satir = $(`[data-borsa-sec="${id}"]`, sayfa);
+    el.kimlik.replaceChildren($('.borsa-ikon', satir).cloneNode(true), el.ad);
+    el.ad.textContent = $('.borsa-satir-ad', satir).textContent;
+    document.title = `${el.ad.textContent} | Piyasalar | The Country Observer`;
+    el.para.hidden = KUR.has(id);
+    segmentSec(el.para, durum.para);
+    if (!ilk) history.replaceState(null, '', `#${id}`);
+    satir.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: ilk || azHareket ? 'instant' : 'smooth' });
+    yukle();
+  }
+
+  $$('[data-borsa-sec]', sayfa).forEach(b => b.addEventListener('click', () => varlikSec(b.dataset.borsaSec)));
+  $$('button', el.aralik).forEach(b => b.addEventListener('click', () => { durum.aralik = b.dataset.deger; segmentSec(el.aralik, durum.aralik); yukle(); }));
+  $$('button', el.para).forEach(b => b.addEventListener('click', () => { durum.para = b.dataset.deger; segmentSec(el.para, durum.para); yukle(); }));
+  addEventListener('resize', () => { segmentSec(el.aralik, durum.aralik); segmentSec(el.para, durum.para); });
+
+  // Fareyle gezinme: başlık, imlecin altındaki değeri ve aralığın başına göre değişimi gösterir.
+  let olcum = null;
+  grafik.subscribeCrosshairMove(p => {
+    if (olcum) return;
+    const d = p.time && p.seriesData.get(seri);
+    if (!d) { varsayilanBaslik(); return; }
+    baslik(d.value, baslangic(), tarihYaz(p.time, ['1g', '1h', '1a'].includes(durum.aralik)));
+  });
+
+  // Sürükleyerek ölçüm: iki nokta arasındaki değişim.
+  const enYakin = x => {
+    const n = noktalar();
+    if (!n.length) return null;
+    const t = grafik.timeScale().coordinateToTime(x);
+    if (t == null) return x < 0 ? 0 : n.length - 1;
+    let alt = 0, ust = n.length - 1;
+    while (alt < ust) { const o = (alt + ust) >> 1; if (n[o][0] + IST < t) alt = o + 1; else ust = o; }
+    return alt;
+  };
+  const xKonum = e => e.clientX - el.grafik.getBoundingClientRect().left;
+  function olcuCiz(i, j) {
+    const n = noktalar(), [a, b] = i <= j ? [i, j] : [j, i];
+    const xa = grafik.timeScale().timeToCoordinate(n[a][0] + IST), xb = grafik.timeScale().timeToCoordinate(n[b][0] + IST);
+    el.secim.hidden = a === b;
+    el.secim.style.left = `${xa}px`;
+    el.secim.style.width = `${Math.max(1, xb - xa)}px`;
+    const gunIci = ['1g', '1h', '1a'].includes(durum.aralik);
+    const r = renk(n[b][1] >= n[a][1] ? '--artis' : '--azalis');
+    el.secim.style.setProperty('--secim-renk', r);
+    baslik(n[b][1], n[a][1], `${tarihYaz(n[a][0] + IST, gunIci)} – ${tarihYaz(n[b][0] + IST, gunIci)}`);
+  }
+  function olcuTemizle() { olcum = null; el.secim.hidden = true; }
+  el.grafik.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || !noktalar().length) return;
+    const i = enYakin(xKonum(e));
+    if (i == null) return;
+    olcum = { bas: i, son: i, tasindi: false };
+    el.grafik.setPointerCapture(e.pointerId);
+  });
+  el.grafik.addEventListener('pointermove', e => {
+    if (!olcum) return;
+    const j = enYakin(xKonum(e));
+    if (j == null || j === olcum.son) return;
+    olcum.son = j; olcum.tasindi = true;
+    olcuCiz(olcum.bas, j);
+  });
+  const birak = () => {
+    if (!olcum) return;
+    if (!olcum.tasindi) { olcuTemizle(); varsayilanBaslik(); return; }
+    olcum.bitti = true;
+  };
+  el.grafik.addEventListener('pointerup', birak);
+  el.grafik.addEventListener('pointercancel', () => { olcuTemizle(); varsayilanBaslik(); });
+  el.grafik.addEventListener('pointerleave', () => { if (olcum?.bitti) { olcuTemizle(); varsayilanBaslik(); } });
+
+  // Listedeki son değerler (bugünkü değişim)
+  ozet().then(liste => {
+    for (const x of liste) {
+      const b = $(`[data-borsa-sec="${x.id}"]`, sayfa);
+      if (!b || x.hata) continue;
+      $('[data-deger]', b).textContent = fiyat(x.fiyat, x.id, x.para);
+      farkYaz($('[data-fark]', b), yuzde(x.fiyat, x.onceki));
+    }
+  }).catch(() => {});
+
+  temaUygula();
+  segmentSec(el.aralik, durum.aralik);
+  varlikSec(location.hash.slice(1), true);
 })();

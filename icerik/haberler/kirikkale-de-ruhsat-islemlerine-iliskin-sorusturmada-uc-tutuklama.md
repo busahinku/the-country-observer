@@ -1,5 +1,5 @@
 ---
-baslik: Kırıkkale’de ruhsat işlemlerine ilişkin soruşturmada üç tutuklama
+baslik: Kırıkkale Belediyesi’nde rüşvet soruşturması: Üç çalışan tutuklandı
 spot: Kırıkkale Belediyesi’nin imar ve ruhsat işlemleriyle ilgili rüşvet iddialarının araştırıldığı soruşturmada üç belediye çalışanı tutuklandı. Dosya, ruhsat almak isteyen bir kişinin şikâyeti üzerine açıldı; ardından başka başvurularla genişledi.
 kategori: gundem
 yazar: Haber Merkezi

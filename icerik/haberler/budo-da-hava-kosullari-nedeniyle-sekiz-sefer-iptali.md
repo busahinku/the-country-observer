@@ -1,5 +1,5 @@
 ---
-baslik: BUDO’da hava koşulları nedeniyle sekiz sefer iptali
+baslik: BUDO’da hava muhalefeti: Sekiz sefer iptal edildi
 spot: Bursa Deniz Otobüsleri, olumsuz hava koşulları nedeniyle sekiz seferin iptal edildiğini duyurdu. Duyuru, Mudanya, İstanbul Kabataş ve Armutlu bağlantılarındaki belirli saatleri kapsıyor.
 kategori: yasam
 yazar: Haber Merkezi

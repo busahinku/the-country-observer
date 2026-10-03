@@ -1,5 +1,5 @@
 ---
-baslik: Trump’tan yaptırımlar sorusuna Erdoğan’la ilişkisi üzerinden yanıt
+baslik: Trump’tan CAATSA sorusuna yanıt: Erdoğan’la sürekli görüşüyorum
 spot: ABD Başkanı Donald Trump, Türkiye’ye yönelik CAATSA yaptırımlarının kaldırılmasına ilişkin soruya Cumhurbaşkanı Recep Tayyip Erdoğan’la ilişkisini vurgulayarak yanıt verdi. Trump, Erdoğan’la sürekli görüştüğünü ve Türkiye’yi sevdiğini söyledi.
 kategori: politika
 yazar: Haber Merkezi
@@ -7,7 +7,8 @@ tarih: 2026-10-03T06:25:00.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: United States Capitol Washington DC
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:President Donald Trump participates in a multilateral meeting with Turkish President Tayyip Erdogan, and others at the United Nations Headquarters (54823840079).jpg
+gorsel_aciklama: Donald Trump ve Recep Tayyip Erdoğan’ın Birleşmiş Milletler’deki görüşmesinden arşiv fotoğrafı.
 kaynaklar: [{"ad":"Evrensel","url":"https://www.evrensel.net/haber/6003228/trump-tan-caatsa-yaptirimlari-aciklamasi-erdogan-benim-dostum-ve-onu-her-zaman-mutlu-ederim?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_syndication"}]
 ---
 ABD Başkanı Donald Trump, Türkiye’ye yönelik CAATSA yaptırımlarının kaldırılmasına ilişkin soruya Cumhurbaşkanı Recep Tayyip Erdoğan’la ilişkisini vurgulayarak yanıt verdi. Trump, Erdoğan’la sürekli görüştüğünü ve Türkiye’yi sevdiğini söyledi.

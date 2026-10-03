@@ -1,14 +1,14 @@
 ---
-baslik: Tahvil faizleri yükseldi, piyasaların gözü yeni verilerde
+baslik: ABD tahvil faizleri 2002’den bu yana zirvede: Piyasaların gözü yeni verilerde
 spot: Küresel piyasalarda haftanın ana gündemi tahvil getirilerindeki yükseliş oldu. ABD’nin on yıllık tahvil faizi yüzde 5,34’ü, otuz yıllık tahvil faizi yüzde 5,69’u görerek 2002’den bu yana en yüksek düzeylere ulaştı.
 kategori: ekonomi
 yazar: Haber Merkezi
 tarih: 2026-10-03T08:37:16.000Z
 bicim: kisa
 etiketler: []
-gorsel_sorgu: Istanbul skyline Bosphorus
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/kuresel-piyasalar-yogun-veri-gundemine-odaklandi/4076813"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/ekonomi/kuresel-piyasalar-yogun-veri-gundemine-odaklandi-958991.html"},{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/gelecek-hafta-kuresel-piyasalar-yogun-veri-gundemine-odaklandi-3790272"}]
+gorsel_sorgu: Levent Istanbul skyscrapers
+gorsel_aciklama: İstanbul Levent'teki finans merkezi.
 ---
 Küresel piyasalarda haftanın ana gündemi tahvil getirilerindeki yükseliş oldu. ABD’nin on yıllık tahvil faizi yüzde 5,34’ü, otuz yıllık tahvil faizi yüzde 5,69’u görerek 2002’den bu yana en yüksek düzeylere ulaştı.
 

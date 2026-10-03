@@ -1,5 +1,5 @@
 ---
-baslik: Merkez Bankası’nın 95 yıllık yolculuğu
+baslik: Merkez Bankası 95 yaşında: 1931’de başlayan yolculuk
 spot: Türkiye Cumhuriyet Merkez Bankası, faaliyete başlamasının 95. yılını kutluyor. Banka 3 Ekim 1931’de çalışmaya başladı; kuruluş kanunu ise Haziran 1930’da kabul edilerek Resmî Gazete’de yayımlanmıştı.
 kategori: ekonomi
 yazar: Haber Merkezi

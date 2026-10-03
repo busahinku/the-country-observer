@@ -1,5 +1,5 @@
 ---
-baslik: Bitcoin 86 bin doların üzerine çıktı
+baslik: Bitcoin yeniden 86 bin doları aştı: Haftalık kazanç yüzde 2,6
 spot: Bitcoin, kaynak haberin yayımlandığı sırada 86 bin doların üzerinde işlem gördü. Saat 12.45 verisinde fiyat 86.347 dolar, haftalık kazanç ise yüzde 2,6 olarak aktarıldı.
 kategori: ekonomi
 yazar: Haber Merkezi

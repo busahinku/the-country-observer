@@ -1,5 +1,5 @@
 ---
-baslik: Kredi kartında asgari ödeme eşiği 100 bin liraya çıktı
+baslik: Kredi kartında asgari ödeme değişti: 100 bin liraya kadar limitte yüzde 20 yetecek
 spot: BDDK, kredi kartlarında asgari ödeme oranı için kullanılan limit eşiğini 50 bin liradan 100 bin liraya yükseltti. Limiti 100 bin lira ve altında olan kartlarda dönem borcunun yüzde 20’si, daha yüksek limitli kartlarda yüzde 40’ı asgari ödeme olacak.
 kategori: ekonomi
 yazar: Haber Merkezi

@@ -7,7 +7,8 @@ tarih: 2026-10-02T14:46:58.000Z
 bicim: kisa
 etiketler: []
 gorsel_sorgu: oil refinery
-gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Donald Trump official portrait.jpg
+gorsel_aciklama: Donald Trump’ın arşiv portresi.
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/trump-avrupanin-stoklarindaki-dizeli-piyasaya-surecegini-duyurdu/4076322"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/dunya/trump-avrupa-dizel-stoklarinin-buyuk-bolumunu-piyasaya-surecek-958937.html"},{"ad":"Habertürk","url":"https://www.haberturk.com/ekonomi/abd-baskani-trump-avrupa-dizel-stoklarini-piyasaya-surecek-3916811"}]
 ---
 ABD Başkanı Donald Trump, Avrupa’nın stoklarındaki dizelin önemli bir bölümünü piyasaya çıkarma konusunda anlaştığını açıkladı. Trump, sosyal medya paylaşımında sürecin hemen başlayacağını söyledi.

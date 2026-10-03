@@ -6,9 +6,9 @@ yazar: Kültür-Sanat Servisi
 tarih: 2026-10-03T07:00:00+03:00
 vitrin: yan
 etiketler: ["İoanna Kuçuradi","Felsefe","İnsan hakları","Vefat"]
-gorsel_sorgu: Hacettepe University Beytepe campus
 kaynaklar: [{"ad":"BBC Türkçe","url":"https://www.bbc.com/turkce/articles/cm5yn3epy6exo"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/kultur-sanat/felsefeci-prof-dr-ioanna-kucuradi-hayatini-kaybetti-958959.html"},{"ad":"Euronews Türkçe","url":"https://tr.euronews.com/2026/10/02/unlu-filozof-prof-dr-ioanna-kucuradi-hayatini-kaybetti"},{"ad":"NTV","url":"https://www.ntv.com.tr/turkiye/filozof-ioanna-kucuradi-hayatini-kaybetti-1744542"}]
-gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+gorsel_dosya: File:Bodrum Belediyesi 19.jpg
+gorsel_aciklama: Bodrum'daki İoanna Kuçuradi büstü. Arşiv fotoğrafı.
 ---
 Türkiye Felsefe Kurumu Başkanı ve Dünya Felsefe Kuruluşları Federasyonu Onursal Başkanı Prof. Dr. İoanna Kuçuradi, tedavi gördüğü Maltepe Üniversitesi Tıp Fakültesi Eğitim ve Araştırma Hastanesi'nde cuma günü hayatını kaybetti. Etik, insan hakları ve değerler felsefesi alanındaki çalışmalarıyla tanınan Kuçuradi 89 yaşındaydı.
 

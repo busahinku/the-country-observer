@@ -1,5 +1,5 @@
 ---
-baslik: Almanya’nın ilk yarı bütçe açığı 98,8 milyar avro
+baslik: Almanya’nın bütçe açığı büyüyor: İlk yarıda 98,8 milyar avro
 spot: Almanya’da kamu bütçesi, yılın ilk altı ayında 98,8 milyar avro açık verdi. Destatis verilerine göre açık, geçen yılın aynı dönemine kıyasla 40,3 milyar avro büyüdü.
 kategori: ekonomi
 yazar: Haber Merkezi

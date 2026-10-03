@@ -1,5 +1,5 @@
 ---
-baslik: Reyhanlı saldırısıyla bağlantılı Ömer el-Hatip yakalandı
+baslik: Reyhanlı saldırısıyla aranan Ömer el-Hatip, MİT operasyonuyla yakalandı
 spot: Güvenlik kaynakları, 2013’te Reyhanlı’da 53 kişinin öldüğü saldırıyla bağlantılı olarak aranan Ömer el-Hatip’in MİT tarafından yakalanıp Türkiye’ye getirildiğini bildirdi. Kaynaklar, el-Hatip’in deniz yoluyla Avrupa’ya geçmeye çalıştığını aktarıyor.
 kategori: gundem
 yazar: Haber Merkezi

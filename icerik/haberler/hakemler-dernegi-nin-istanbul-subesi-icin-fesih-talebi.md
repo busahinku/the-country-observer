@@ -1,5 +1,5 @@
 ---
-baslik: Hakemler Derneği’nin İstanbul şubesi için fesih talebi
+baslik: Hakemler Derneği İstanbul Şubesi için kapatma davası açıldı
 spot: İstanbul Cumhuriyet Başsavcılığı, Türkiye Faal Futbol Hakemleri ve Gözlemcileri Derneği İstanbul Şubesi’nin kapatılması istemiyle hukuk mahkemesine başvurdu. Davaname, Yasa Dışı Bahis ve Spor Suçları Soruşturma Bürosu tarafından hazırlandı.
 kategori: spor
 yazar: Haber Merkezi
