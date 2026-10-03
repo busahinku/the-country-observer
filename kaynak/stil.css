@@ -562,11 +562,8 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 
 .akis-duzen{display:grid;grid-template-columns:minmax(0,620px) 300px;justify-content:center;align-items:start;gap:48px}
 .akis{border-inline:1px solid var(--cizgi);min-height:100vh}
-.akis-bas{display:flex;align-items:baseline;gap:14px;padding:32px 24px 18px}
-.akis-bas h1{font:700 clamp(36px,5vw,52px)/1 var(--f-bower);letter-spacing:-.01em}
-.akis-bas p{margin:0;font-size:14px;color:var(--soluk)}
 
-.konu-liste{display:flex;gap:12px;list-style:none;padding:4px 24px 22px;overflow-x:auto;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+.konu-liste{display:flex;gap:12px;list-style:none;padding:24px 24px 22px;overflow-x:auto;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
 .konu-liste::-webkit-scrollbar{display:none}
 .konu{display:grid;justify-items:center;gap:8px;width:74px;padding:0;border:0;background:none;cursor:pointer}
 .konu-halka{width:64px;height:64px;padding:3px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--cizgi);transition:box-shadow .35s var(--egri),transform .35s var(--egri)}
@@ -585,9 +582,6 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 .akis-sekme button .ikon{width:15px;height:15px}
 .akis-sekme-imlec{position:absolute;left:0;bottom:0;width:0;height:3px;border-radius:3px 3px 0 0;background:var(--vurgu);transition:transform .45s var(--egri),width .45s var(--egri)}
 
-.akis-gun-bas{position:sticky;top:53px;z-index:5;display:flex;align-items:baseline;gap:6px;padding:12px 24px;border-bottom:1px solid var(--cizgi);background:color-mix(in srgb,var(--zemin) 94%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);font:700 15px/1.2 var(--f-bower)}
-.akis-gun-bas time{font:500 13px/1.2 var(--f-inter);color:var(--soluk)}
-.akis-gun-bas span:empty+time{font:700 15px/1.2 var(--f-bower);color:var(--metin)}
 [data-gun-ad]:not(:empty)::after{content:" · ";color:var(--soluk);font-weight:400}
 
 .gonderi{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;padding:20px 24px 12px;border-bottom:1px solid var(--cizgi);transition:background-color .25s}
@@ -654,10 +648,8 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 @media (max-width:640px){
   .akis-duzen{width:100%}
   .akis{border-inline:0}
-  .akis-bas{padding:24px 16px 14px}
-  .konu-liste{padding-inline:16px}
+  .konu-liste{padding:18px 16px 18px}
   .akis-sekme-ic{padding:0 6px}
-  .akis-gun-bas{padding-inline:16px}
   .gonderi{grid-template-columns:34px minmax(0,1fr);gap:12px;padding:18px 16px 10px}
   .gonderi-avatar{width:34px;height:34px}
   .gonderi-avatar .ikon{width:16px;height:16px}

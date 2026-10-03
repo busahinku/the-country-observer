@@ -597,11 +597,10 @@ ${h.gorsel ? `<div class="gonderi-gorsel">${gorsel(h, { sizes: '(max-width: 640p
 
   const icerik = `<div class="kap akis-duzen">
   <section class="akis" aria-labelledby="akis-baslik">
-    <header class="akis-bas"><h1 id="akis-baslik">Akış</h1><p>${haberler.length} haber</p></header>
+    <h1 class="gizli" id="akis-baslik">Akış</h1>
     ${konular.length ? `<ul class="konu-liste" aria-label="Konular">${konuHtml}</ul>` : ''}
     <div class="akis-sekme" role="group" aria-label="Bölüme göre süz"><div class="akis-sekme-ic">${sekmeler.map(([k, ad], i) => `<button type="button" data-sekme="${k}" aria-pressed="${i === 0}">${k === 'kaydedilen' ? ikon('bookmark') : ''}${ad}</button>`).join('')}<span class="akis-sekme-imlec" aria-hidden="true"></span></div></div>
     ${gunler.map(({ g, liste }) => `<section class="akis-gun" id="gun-${g}" data-gun="${g}" aria-label="${gunAdi.format(liste[0].tarih)}">
-    <h2 class="akis-gun-bas"><span data-gun-ad="${g}"></span><time datetime="${g}">${gunAdi.format(liste[0].tarih)}</time></h2>
     ${liste.map(gonderi).join('')}
     </section>`).join('')}
     <p class="akis-bos" hidden></p>
