@@ -1,0 +1,27 @@
+name: Haber kaynaklarını tara
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tara:
+    name: Çok kaynaklı haber adaylarını hazırla
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Gazete dosyalarını al
+        uses: actions/checkout@v4
+      - name: Çalışma ortamını hazırla
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Son 48 saatin haberlerini topla
+        run: node araclar/topla.mjs --saat 48
+      - name: İnceleme listesini sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: haber-adaylari
+          path: .onbellek/kumeler.json
+          retention-days: 7

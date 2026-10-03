@@ -1,4 +1,4 @@
-/* The Country Observer: tek stil dosyası, derlemede her sayfaya gömülür.
+/* The Country Observer: tüm sayfalarda önbelleklenen ortak stil dosyası.
    Köşe kuralı: rozet ve etiketler 4px, görseller/düğmeler/kutular 6px, yüzen paneller 20px, ikon düğmeleri yuvarlak. */
 
 @font-face{font-family:"Bower";src:url(/*TABAN*//yazitipleri/bower.woff2) format("woff2");font-weight:400 800;font-display:swap}
@@ -222,7 +222,7 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 .haber-govde{width:min(100% - 2*var(--bosluk),680px);margin-top:40px}
 .metin{font:400 18.5px/1.78 var(--f-inter);letter-spacing:-.003em}
 .metin p{margin:0 0 1.35em}
-.metin>p:first-child::first-letter{float:left;font:700 4.15em/.8 var(--f-bower);margin:.07em .1em 0 0;color:var(--metin)}
+.metin>p:first-child::first-letter{float:left;font:700 3.1em/.92 var(--f-bower);margin:.06em .12em 0 0;color:var(--metin)}
 .metin h2{font:700 27px/1.25 var(--f-bower);margin:1.9em 0 .7em;scroll-margin-top:80px}
 .metin blockquote{margin:2em 0;padding:4px 0 4px 24px;border-left:3px solid var(--vurgu)}
 .metin blockquote p{font:700 clamp(21px,2.2vw,25px)/1.4 var(--f-bower);margin:0}
@@ -306,8 +306,15 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 /* ---------- Hareket ---------- */
 @media (prefers-reduced-motion:no-preference){
   @view-transition{navigation:auto}
-  ::view-transition-old(root){animation:.25s ease both solma}
-  ::view-transition-new(root){animation:.4s var(--egri) both belirme}
+  ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+  main{view-transition-name:icerik}
+  .ust-alan{view-transition-name:ust-alan}
+  .yapiskan{view-transition-name:yapiskan}
+  .alt-alan{view-transition-name:alt-alan}
+  ::view-transition-old(icerik){animation:.16s ease both solma}
+  ::view-transition-new(icerik){animation:.28s var(--egri) both belirme}
+  ::view-transition-old(ust-alan),::view-transition-new(ust-alan),::view-transition-old(yapiskan),::view-transition-new(yapiskan),::view-transition-old(alt-alan),::view-transition-new(alt-alan){animation:none;mix-blend-mode:normal}
+  ::view-transition-group(ust-alan),::view-transition-group(yapiskan),::view-transition-group(alt-alan){animation-duration:0s}
   ::view-transition-group(kapak){animation-duration:.5s;animation-timing-function:var(--egri)}
   .kapak{view-transition-name:kapak}
   @supports (animation-timeline:view()){
@@ -380,3 +387,15 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
   .abone-pencere{padding:26px 20px}
   .abone-adres{flex-direction:column}
 }
+
+/* Sesli haber: dosya yalnızca dinleme başladığında yüklenir. */
+.sesli-haber{margin-top:22px;padding:18px 20px;background:var(--kart);border:1px solid var(--cizgi);border-radius:var(--r);display:grid;gap:12px}
+.sesli-bas{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.sesli-bas strong{font:600 14px/1.4 var(--f-inter)}
+.sesli-bas span{font:400 12px/1.4 var(--f-inter);color:var(--soluk)}
+.sesli-haber audio{width:100%;height:40px}
+.sesli-hiz{display:flex;align-items:center;gap:10px;font:400 12px/1.4 var(--f-inter);color:var(--ikincil)}
+.sesli-hiz select{font:inherit;color:var(--metin);background:var(--zemin);border:1px solid var(--cizgi);border-radius:4px;padding:5px 8px}
+.sesli-durum{margin:0;font:400 12px/1.5 var(--f-inter);color:var(--soluk)}
+@supports(initial-letter:2){.metin>p:first-child::first-letter{float:none;initial-letter:2;font-size:3.1em;line-height:1;margin:0 .12em 0 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

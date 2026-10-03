@@ -1,0 +1,21 @@
+---
+baslik: Fabrikalardaki aktif robot sayısı beş milyonu geçti
+spot: Uluslararası Robotik Federasyonu’nun verilerine göre dünyadaki aktif endüstriyel robot sayısı 2025’te yüzde 9 artarak 5 milyon 79 bine ulaştı. Aynı yıl fabrikalara kurulan yeni robot sayısı yüzde 11 artışla 600 bini aştı.
+kategori: analiz
+yazar: Haber Merkezi
+tarih: 2026-10-02T08:08:57.000Z
+bicim: analiz
+etiketler: []
+gorsel_sorgu: industrial robots factory
+gorsel_aciklama: Temsili fotoğraf; haber konusu olayın görüntüsü değildir.
+kaynaklar: [{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/fabrikalarda-aktif-calisan-robot-sayisi-5-milyonu-asti-3790118"},{"ad":"Sözcü","url":"https://www.sozcu.com.tr/fabrikalarda-calisan-robot-sayisi-5-milyonu-asti-p365507"}]
+---
+Uluslararası Robotik Federasyonu’nun verilerine göre dünyadaki aktif endüstriyel robot sayısı 2025’te yüzde 9 artarak 5 milyon 79 bine ulaştı. Aynı yıl fabrikalara kurulan yeni robot sayısı yüzde 11 artışla 600 bini aştı.
+
+Çin, 354 bin yeni kurulumla küresel toplamın yüzde 59’unu oluşturdu. Ülkedeki yerli üreticilerin pazar payı yüzde 55’e çıktı. Japonya’nın yeni kurulumları 36.219’a gerilerken Güney Kore yaklaşık 30 binle önemli pazarlar arasında kaldı. Aktif robot stoku ile bir yıldaki yeni kurulum sayısı farklı ölçüler; beş milyon rakamı yalnızca o yıl satın alınan robotları göstermiyor.
+
+## Stok ve yeni kurulum arasındaki ayrım
+
+Beş milyonun üzerindeki toplam, önceki yıllarda kurulan ve hâlâ çalışan robotları da kapsıyor. Altı yüz binin üzerindeki yeni kurulum ise yalnızca bir yıl içinde üretim hatlarına eklenen robotları gösteriyor. Stokun yüzde 9, yeni kurulumun yüzde 11 artması bu yüzden farklı hızları ifade ediyor.
+
+Çin’in yüzde 59 payı yeni kurulum pazarına ilişkin. Aynı rakamı dünya genelindeki bütün çalışan robotların ülke dağılımı olarak kullanmak yanlış olur. Kurulumlar otomasyon yatırımının yönünü gösterse de tek başına iş kaybı veya üretim artışı hesabı sunmuyor; sektör, kapasite ve robotların hangi görevlerde kullanıldığı gibi bilgiler de gerekiyor.

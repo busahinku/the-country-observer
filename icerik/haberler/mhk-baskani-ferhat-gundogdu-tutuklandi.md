@@ -8,6 +8,7 @@ vitrin: manset
 etiketler: ["MHK","Ferhat Gündoğdu","TFF","Hakemler dosyası"]
 gorsel_dosya: File:Yellow card, Czech Rp.-Montenegro EURO 2020 QR 10-06-2019.jpg
 kaynaklar: [{"ad":"BBC Türkçe","url":"https://www.bbc.com/turkce/articles/cm62kp4k28gro"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/gundem/mhk-baskani-ferhat-gundogdu-tutuklandi-958976.html"},{"ad":"Euronews Türkçe","url":"https://tr.euronews.com/2026/10/03/mhk-baskani-ferhat-gundogdu-dahil-bes-kisi-tutuklandi-iki-kisiye-adli-kontrol"},{"ad":"Ekonomim","url":"https://www.ekonomim.com/spor/mhk-baskani-ferhat-gundogdu-hakimlikte-savunma-yapti-boyle-bir-kaydin-kotu-niyetle-olmadigini-dusunuyorum-haberi-922321"},{"ad":"Halk TV","url":"https://halktv.com.tr/spor/ferhat-gundogdu-ses-kaydini-savundu-nasihat-verdim-1059167h"},{"ad":"TRT Haber (Yasin Kol)","url":"https://www.trthaber.com/haber/gundem/hakem-yasin-kol-gozaltina-alindi-958828.html"}]
+gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 ---
 Türkiye Futbol Federasyonu (TFF) Merkez Hakem Kurulu (MHK) Başkanı Ferhat Gündoğdu, kamuoyunda "Hakemler dosyası" olarak bilinen soruşturma kapsamında tutuklandı. Cuma günü tutuklama talebiyle hakimliğe sevk edilen yedi şüpheliden beşi cumartesi sabahı cezaevine gönderildi.
 

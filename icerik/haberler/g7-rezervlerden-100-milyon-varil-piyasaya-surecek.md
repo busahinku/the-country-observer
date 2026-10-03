@@ -8,6 +8,7 @@ vitrin: manset
 etiketler: ["G7","Petrol","Dizel","Enerji krizi","IEA"]
 gorsel_sorgu: oil refinery storage tanks
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/g7-rezervlerinden-100-milyon-varil-petrol-ve-dizeli-piyasaya-surecek/4076373"},{"ad":"DW Türkçe","url":"https://www.dw.com/tr/g7-ülkeleri-fiyatları-düşürmek-için-piyasaya-dizel-ve-ham-petrol-sürecek/a-79524234"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/dunya/g7den-enerji-fiyatlarini-dusurmek-icin-100-milyon-varillik-hamle-958945.html"},{"ad":"Euronews Türkçe","url":"https://tr.euronews.com/2026/10/03/g7-abdnin-dizel-baskisi-sonrasi-100-milyon-varillik-petrol-rezervini-piyasaya-surme-karari"},{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/g7-piyasaya-100-milyon-varil-dizel-ve-petrol-surecek-3790219"}]
+gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 ---
 ABD, Almanya, Birleşik Krallık, Fransa, İtalya, Japonya ve Kanada'dan oluşan G7, stratejik rezervlerindeki 100 milyon varil ham petrol ve dizeli önümüzdeki dört ay içinde piyasaya sürme konusunda anlaştı. Liderlerin çevrim içi toplantısının ardından Fransa Cumhurbaşkanlığının yayımladığı ortak açıklamaya göre arz Uluslararası Enerji Ajansı (IEA) koordinasyonunda yapılacak ve derhal başlayacak.
 

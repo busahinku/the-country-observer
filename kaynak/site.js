@@ -5,6 +5,19 @@
   const TABAN = document.body.dataset.taban || '';
   const azHareket = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Sesli haber: aynı anda yalnızca bir kayıt çalsın.
+  $$('audio').forEach(ses => {
+    ses.addEventListener('play', () => $$('audio').forEach(diger => { if (diger !== ses) diger.pause(); }));
+    ses.addEventListener('error', () => {
+      const durum = $('.sesli-durum', ses.closest('.sesli-haber'));
+      if (durum) durum.textContent = 'Ses kaydı yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.';
+    });
+  });
+  $$('[data-ses-hiz]').forEach(secim => secim.addEventListener('change', () => {
+    const ses = $('audio', secim.closest('.sesli-haber'));
+    if (ses) ses.playbackRate = Number(secim.value);
+  }));
+
   // Tema
   const kok = document.documentElement;
   $$('[data-tema-dugme]').forEach(d => d.addEventListener('click', () => {
@@ -111,7 +124,7 @@
   // Yatay kaydırmalı alanlar
   $('.trend-ileri')?.addEventListener('click', () => {
     const l = $('.trend-liste');
-    l.scrollBy({ left: l.scrollLeft + l.clientWidth >= l.scrollWidth - 4 ? -l.scrollWidth : l.clientWidth, behavior: 'smooth' });
+    l.scrollBy({ left: l.scrollLeft + l.clientWidth >= l.scrollWidth - 4 ? -l.scrollWidth : l.clientWidth, behavior: azHareket ? 'instant' : 'smooth' });
   });
   // Sayfa geçişi: tıklanan haberin görseli yeni sayfadaki kapak görseline dönüşür
   if (document.startViewTransition !== undefined || 'onpagereveal' in window) {

@@ -7,6 +7,7 @@ tarih: 2026-10-03T12:55:00+03:00
 etiketler: ["İhracat","TİM","Dış ticaret","Ömer Bolat"]
 gorsel_sorgu: container ship port Turkey Mersin
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/ekonomi/ticaret-bakani-bolat-en-yuksek-eylul-ayi-ihracat-rekoru-kirildi/4076727"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/ekonomi/ihracat-eylul-ayinda-rekor-kirdi-958983.html"},{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/timgultepe-3790274"},{"ad":"Ekonomim","url":"https://www.ekonomim.com/ekonomi/tim-baskani-gultepe-gecen-ay-56-ilimiz-ihracatini-artirdi-iste-en-cok-ihracat-yaptigimiz-3-ulke-haberi-922355"},{"ad":"Anadolu Ajansı (Şimşek)","url":"https://www.aa.com.tr/tr/ekonomi/bakan-simsek-dis-ticaret-acigindaki-artis-ongorulenden-daha-sinirli-kaldi/4076867"}]
+gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 ---
 Türkiye'nin ihracatı eylülde geçen yılın aynı ayına göre yüzde 15,4 artarak 26 milyar dolara ulaştı. Rakamlar, Ticaret Bakanı Ömer Bolat ile Türkiye İhracatçılar Meclisi (TİM) Başkanı Mustafa Gültepe'nin katıldığı toplantıda açıklandı.
 

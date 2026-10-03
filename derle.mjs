@@ -2,9 +2,12 @@
 // icerik/haberler/*.md + icerik/gorseller.json + kaynak/ -> yayin/
 // Kullanım: node derle.mjs   (TABAN_YOL=/ ile yerel kök dizinde de derlenebilir)
 import { readFile, writeFile, readdir, mkdir, cp, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
-const TABAN = (process.env.TABAN_YOL ?? '/the-country-observer').replace(/\/$/, '');
-const SITE = process.env.SITE_ADRESI ?? 'https://busahin.com';
+const YAYIN_AYARLARI = JSON.parse(await readFile('yayin-ayarlari.json', 'utf8').catch(() => '{}'));
+const TABAN = (process.env.TABAN_YOL ?? YAYIN_AYARLARI.taban_yol ?? '/the-country-observer').replace(/\/$/, '');
+const SITE = process.env.SITE_ADRESI ?? YAYIN_AYARLARI.site_adresi ?? 'https://busahin.com';
+const OZEL_ALAN = process.env.OZEL_ALAN_ADI ?? YAYIN_AYARLARI.ozel_alan_adi ?? '';
 const CIKTI = process.env.CIKTI_DIZIN ?? 'yayin';
 const ICERIK = process.env.ICERIK_DIZIN ?? 'icerik';
 const SITE_ADI = 'The Country Observer';
@@ -61,9 +64,10 @@ async function haberleriOku() {
     const { bilgi, govde } = onBilgiCoz(await readFile(`${ICERIK}/haberler/${d}`, 'utf8'));
     if (!KATEGORILER[bilgi.kategori]) throw new Error(`${id}: bilinmeyen kategori "${bilgi.kategori}"`);
     for (const alan of ['baslik', 'spot', 'tarih']) if (!bilgi[alan]) throw new Error(`${id}: "${alan}" eksik`);
+    const sesVar = await readFile(`statik/sesler/${id}.mp3`).then(() => true).catch(() => false);
     const kelime = govde.split(/\s+/).length;
     return {
-      ...bilgi, id, govde,
+      ...bilgi, id, govde, sesVar,
       tarih: new Date(bilgi.tarih),
       etiketler: bilgi.etiketler || [],
       kaynaklar: bilgi.kaynaklar || [],
@@ -86,7 +90,7 @@ const ikon = (ad, sinif = 'ikon') => `<svg class="${sinif}" aria-hidden="true"><
 function gorsel(h, { sizes = '(max-width: 640px) 100vw, 33vw', oncelikli = false, sinif = '' } = {}) {
   if (!h.gorsel) return `<div class="gorsel-yok ${sinif}" aria-hidden="true"><span>${kacis(h.kategoriAd)}</span></div>`;
   const yol = g => u(`/gorseller/${h.gorsel.id}-${g}.webp`);
-  return `<img class="${sinif}" src="${yol(960)}" srcset="${yol(480)} 480w, ${yol(960)} 960w, ${yol(1600)} 1600w" sizes="${sizes}" alt="${kacis(h.gorsel_aciklama || h.baslik)}" style="background:${h.gorsel.renk}" ${oncelikli ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" width="1600" height="${Math.round(1600 / (h.gorsel.oran || 1.5))}">`;
+  return `<img class="${sinif}" src="${yol(960)}" srcset="${yol(480)} 480w, ${yol(960)} 960w, ${yol(1600)} 1600w" sizes="${sizes}" alt="${kacis(h.gorsel_aciklama ? `${h.baslik}. ${h.gorsel_aciklama}` : h.baslik)}" style="background:${h.gorsel.renk}" ${oncelikli ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" width="1600" height="${Math.round(1600 / (h.gorsel.oran || 1.5))}">`;
 }
 
 const zaman = (h, sinif = '') => `<time class="${sinif}" datetime="${h.tarih.toISOString()}" data-goreli>${kisaTarih.format(h.tarih)}</time>`;
@@ -143,7 +147,7 @@ const altAlan = () => `<footer class="alt-alan">
   <div class="kap alt-ic">
     <div class="alt-marka">
       <a class="logo" href="${u('/')}">The Country Observer</a>
-      <p>Türkiye ve dünyadan haberler, birden fazla kaynağın karşılaştırılmasıyla derlenir. Her haberin sonunda yararlandığımız kaynakları açıkça listeleriz.</p>
+      <p>Türkiye ve dünyadan gelişmeleri, kaynaklarını göstererek ve açıklamalarla iddiaları ayırarak aktarıyoruz. Haberlerin sonunda yararlandığımız kaynakları açıkça listeleriz.</p>
     </div>
     <nav class="alt-nav" aria-label="Alt menü">
       <div><h2>Bölümler</h2><ul>${Object.entries(KATEGORILER).slice(0, 5).map(([k, ad]) => `<li><a href="${u(`/kategori/${k}/`)}">${ad}</a></li>`).join('')}</ul></div>
@@ -176,7 +180,7 @@ const pencereler = () => `<dialog class="pencere arama-pencere" id="arama" aria-
   <a class="dugme dugme-dolu" href="https://feedly.com/i/subscription/feed/${encodeURIComponent(tamAdres('/rss.xml'))}" rel="noopener" target="_blank">Feedly'de takip et</a>
 </dialog>`;
 
-let CSS = '', SPRITE = '';
+let CSS = '', SPRITE = '', VARLIK_SURUM = '';
 
 function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorselYolu, tur = 'website', jsonld, onYukle = '' }) {
   const tamBaslik = baslik ? `${baslik} | ${SITE_ADI}` : `${SITE_ADI} | Türkiye'nin bağımsız haber gazetesi`;
@@ -200,7 +204,7 @@ function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorsel
 <link rel="preload" href="${u('/yazitipleri/bower.woff2')}" as="font" type="font/woff2" crossorigin>
 ${onYukle}
 <script>try{var t=localStorage.getItem('tema');if(t)document.documentElement.dataset.tema=t}catch(e){}</script>
-<style>${CSS.replaceAll('/*TABAN*/', TABAN)}</style>
+<link rel="stylesheet" href="${u(`/stil.css?v=${VARLIK_SURUM}`)}">
 <script type="speculationrules">{"prerender":[{"where":{"and":[{"href_matches":"${TABAN}/*"},{"not":{"href_matches":"${TABAN}/*.xml"}}]},"eagerness":"moderate"}]}</script>
 ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>` : ''}
 </head>
@@ -214,7 +218,7 @@ ${icerik}
 </main>
 ${altAlan()}
 ${pencereler()}
-<script src="${u('/site.js')}" defer></script>
+<script src="${u(`/site.js?v=${VARLIK_SURUM}`)}" defer></script>
 </body>
 </html>`;
 }
@@ -342,6 +346,12 @@ function haberSayfasi(h, haberler) {
         <button class="ikon-dugme cerceveli" data-kopyala="${tamAdres(`/haber/${h.id}/`)}" aria-label="Bağlantıyı kopyala">${ikon('link-simple')}</button>
       </div>
     </div>
+    ${h.sesVar ? `<section class="sesli-haber" aria-label="Haberi sesli dinle">
+      <div class="sesli-bas"><strong>Haberi dinle</strong><span>Türkçe sesli anlatım</span></div>
+      <audio controls preload="none" aria-label="${kacis(h.baslik)} — sesli haber" src="${u(`/sesler/${h.id}.mp3`)}"></audio>
+      <label class="sesli-hiz">Dinleme hızı <select data-ses-hiz><option value="0.85">0,85×</option><option value="1" selected>1×</option><option value="1.15">1,15×</option><option value="1.3">1,3×</option><option value="1.5">1,5×</option></select></label>
+      <p class="sesli-durum" role="status">Bu haber yapay sesle okunmuştur.</p>
+    </section>` : ''}
   </header>
   ${g ? `<figure class="kap haber-gorsel">
     ${gorsel(h, { sizes: '(max-width: 1100px) 100vw, 1100px', oncelikli: true, sinif: 'kapak' })}
@@ -352,7 +362,7 @@ function haberSayfasi(h, haberler) {
     ${h.etiketler.length ? `<ul class="etiketler" aria-label="Etiketler">${h.etiketler.map(e => `<li>${kacis(e)}</li>`).join('')}</ul>` : ''}
     ${h.kaynaklar.length ? `<aside class="kaynaklar">
       <h2>Bu haber nasıl hazırlandı?</h2>
-      <p>Haberdeki bilgiler aşağıdaki kaynakların aktardıklarıyla karşılaştırılarak derlendi:</p>
+      <p>${h.kaynaklar.length === 1 ? 'Bu haber aşağıdaki kaynağın yayımladığı bilgilere dayanıyor. Kaynak metnine bağlantıdan ulaşabilirsiniz.' : h.bicim === 'kisa' ? 'Bu kısa haber, aşağıdaki kaynakların yayımladığı bilgilerden özgün biçimde özetlendi. Ayrıntılı kaynak haberlerine bağlantılardan ulaşabilirsiniz.' : 'Haberdeki bilgiler aşağıdaki kaynakların aktardıklarıyla karşılaştırılarak derlendi:'}</p>
       <ul>${h.kaynaklar.map(k => `<li><a href="${kacis(k.url)}" rel="noopener nofollow" target="_blank">${kacis(k.ad)}${ikon('arrow-up-right')}</a></li>`).join('')}</ul>
     </aside>` : ''}
   </div>
@@ -435,16 +445,20 @@ async function derle() {
   const baslangic = performance.now();
   const haberler = await haberleriOku();
   CSS = kucult(await readFile('kaynak/stil.css', 'utf8'));
+  const BETIK = await readFile('kaynak/site.js', 'utf8');
+  VARLIK_SURUM = createHash('sha256').update(CSS + BETIK).digest('hex').slice(0, 12);
   for (const d of (await readdir('kaynak/ikonlar')).filter(d => d.endsWith('.svg'))) {
     const svg = await readFile(`kaynak/ikonlar/${d}`, 'utf8');
-    ikonlar.set(d.slice(0, -4), `<symbol id="i-${d.slice(0, -4)}" viewBox="0 0 256 256">${svg.replace(/^<svg[^>]*>|<\/svg>\s*$/g, '')}</symbol>`);
+    ikonlar.set(d.slice(0, -4), `<symbol id="i-${d.slice(0, -4)}" viewBox="0 0 256 256" fill="currentColor">${svg.replace(/^<svg[^>]*>|<\/svg>\s*$/g, '')}</symbol>`);
   }
   SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">${[...ikonlar.values()].join('')}</svg>`;
 
   await rm(CIKTI, { recursive: true, force: true });
   await cp('statik', CIKTI, { recursive: true });
-  await writeFile(`${CIKTI}/site.js`, await readFile('kaynak/site.js', 'utf8'));
+  await writeFile(`${CIKTI}/site.js`, BETIK);
+  await writeFile(`${CIKTI}/stil.css`, CSS.replaceAll('/*TABAN*/', TABAN));
   await writeFile(`${CIKTI}/.nojekyll`, '');
+  if (OZEL_ALAN) await writeFile(`${CIKTI}/CNAME`, `${OZEL_ALAN}\n`);
 
   await yaz('/', anaSayfa(haberler));
   await Promise.all(haberler.map(h => yaz(`/haber/${h.id}/`, haberSayfasi(h, haberler))));

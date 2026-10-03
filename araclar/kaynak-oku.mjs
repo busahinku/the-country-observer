@@ -4,12 +4,14 @@ import { readFile } from 'node:fs/promises';
 import { metinTemizle } from './topla.mjs';
 
 const TARAYICI = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128 Safari/537.36';
-const GURULTU = /abone ol|tüm hakları|çerez|copyright|google news|whatsapp kanal|reklam|bizi takip|haberin devamı|ilginizi çekebilir|e-bülten|uygulamamızı indir|yorum yap/i;
+const GURULTU = /abone ol|gündemi bbc|iletişime geçiniz|okur temsilcimize|emeğin sesi|güç ver|tüm hakları|çerez|copyright|google news|whatsapp kanal|reklam|bizi takip|haberin devamı|ilginizi çekebilir|e-bülten|uygulamamızı indir|yorum yap/i;
 // Tam metni en düzgün veren kaynaklar öne alınır.
 const TERCIH = ['Anadolu Ajansı', 'BBC Türkçe', 'DW Türkçe', 'TRT Haber', 'Euronews Türkçe', 'Hürriyet', 'NTV', 'Habertürk', 'Bloomberg HT', 'Cumhuriyet', 'Karar', 'Evrensel'];
 
 export async function metinCek(url, uzunluk = 2500) {
-  const html = await (await fetch(url, { headers: { 'user-agent': TARAYICI }, signal: AbortSignal.timeout(15000) })).text();
+  const yanit = await fetch(url, { headers: { 'user-agent': TARAYICI }, signal: AbortSignal.timeout(15000) });
+  if (!yanit.ok) throw new Error(`Kaynak yanıtı: ${yanit.status}`);
+  const html = await yanit.text();
   const govde = html.replace(/<(script|style|nav|header|footer|aside|form|figure)\b[\s\S]*?<\/\1>/gi, ' ');
   const paragraflar = [...govde.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
     .map(m => metinTemizle(m[1])).filter(p => p.length > 50 && !GURULTU.test(p));

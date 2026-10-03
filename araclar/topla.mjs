@@ -102,7 +102,7 @@ export const kokler = metin => new Set(
 const benzerlik = (a, b) => {
   let ortak = 0;
   for (const k of a) if (b.has(k)) ortak++;
-  return ortak < 2 ? 0 : ortak / Math.min(a.size, b.size);
+  return ortak < 2 ? 0 : 2 * ortak / (a.size + b.size);
 };
 
 // ponytail: açgözlü O(n·k) kümeleme, birkaç bin haber için yeterli; daha fazlasında MinHash'e geçilir.
@@ -112,12 +112,15 @@ export function kumele(ogeler) {
     o._k = kokler(o.baslik);
     let enIyi = null, puan = 0;
     for (const k of kumeler) {
+      const sayilar = s => new Set(s.match(/\b\d+\b/g) || []);
+      const adaySayilar = sayilar(o.baslik), temsilciSayilar = sayilar(k.ogeler[0].baslik);
+      if (adaySayilar.size && temsilciSayilar.size && ![...adaySayilar].some(n => temsilciSayilar.has(n))) continue;
       const p = benzerlik(o._k, k.kokler);
       if (p > puan) { puan = p; enIyi = k; }
     }
-    if (enIyi && puan >= 0.5) {
+    if (enIyi && puan >= 0.67) {
       enIyi.ogeler.push(o);
-      for (const k of o._k) enIyi.kokler.add(k);
+      // Temsilci başlık sabit kalır; zincirleme büyüme farklı olayları birleştirmesin.
     } else kumeler.push({ kokler: new Set(o._k), ogeler: [o] });
   }
   return kumeler.map(k => {
@@ -131,6 +134,7 @@ export async function topla(saat = 48) {
   const sinir = Date.now() - saat * 3600e3;
   const sonuclar = await Promise.allSettled(KAYNAKLAR.map(async ([ad, url]) => {
     const yanit = await fetch(url, { headers: { 'user-agent': TARAYICI }, signal: AbortSignal.timeout(15000) });
+    if (!yanit.ok) throw new Error(`${ad}: HTTP ${yanit.status}`);
     return akisCoz(await yanit.text(), ad);
   }));
   const gorulen = new Set();

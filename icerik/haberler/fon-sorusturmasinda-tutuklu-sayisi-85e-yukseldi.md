@@ -8,6 +8,7 @@ vitrin: manset
 etiketler: ["Fon soruşturması","SPK","Borsa İstanbul","TMSF"]
 gorsel_sorgu: Borsa Istanbul
 kaynaklar: [{"ad":"BBC Türkçe","url":"https://www.bbc.com/turkce/articles/ck5ywrewe8dxo"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/gundem/fon-sorusturmasinda-tutuklu-sayisi-85e-yukseldi-958977.html"},{"ad":"Habertürk","url":"https://www.haberturk.com/ekonomi/sermaye-piyasasi-sorusturmasinda-gozaltina-alinan-20-supheli-cezaevine-gonderildi-3916910"},{"ad":"BBC Türkçe (Fon Koordinasyon Kurulu)","url":"https://www.bbc.com/turkce/articles/cm36l6gzjnpwo"},{"ad":"Bloomberg HT","url":"https://www.bloomberght.com/fon-krizinde-tasfiye-hizlaniyor-yatirimciya-ara-odeme-geliyor-3790268"}]
+gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 ---
 İstanbul Cumhuriyet Başsavcılığının sermaye piyasasındaki işlemlere yönelik yürüttüğü soruşturmada gözaltına alınan 20 şüphelinin tamamı tutuklandı. Sulh ceza hakimliğinin cumartesi günü verdiği kararla dosyada tutuklananların sayısı 85'e yükseldi.
 

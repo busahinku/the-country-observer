@@ -7,6 +7,7 @@ tarih: 2026-10-03T12:40:00+03:00
 etiketler: ["Faili meçhul","Adalet Bakanlığı","Akın Gürlek"]
 gorsel_sorgu: Turkish Gendarmerie
 kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/gundem/adalet-bakani-gurlekten-faili-mechul-dosyalara-iliskin-aciklama/4076870"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/gundem/bakan-gurlek-7-faili-mechul-dosyada-8-cinayet-aydinlatildi-958997.html"},{"ad":"Hürriyet","url":"https://www.hurriyet.com.tr/gundem/bakan-gurlek-7-dosyada-8-faili-mechul-cinayet-aydinlatildi-43328184"},{"ad":"NTV","url":"https://www.ntv.com.tr/turkiye/sekiz-faili-mechul-dosya-aydinlatildi-1744608"}]
+gorsel_aciklama: Arşivden temsili fotoğraf; haber konusu olayın görüntüsü değildir.
 ---
 Adalet Bakanlığı bünyesindeki Faili Meçhul Suçları Araştırma Daire Başkanlığının koordinasyonunda yürütülen çalışmalarda, yıllardır çözülemeyen yedi dosyada sekiz cinayet aydınlatıldı. Dosyaların en eskisi yaklaşık 39, en yenisi ise 3 yıllık.
 

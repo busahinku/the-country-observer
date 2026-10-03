@@ -17,7 +17,7 @@ async function commonsAra(sorgu, kesinDosya) {
     action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size|extmetadata|mime', iiurlwidth: '1600',
     ...(kesinDosya ? { titles: kesinDosya } : { generator: 'search', gsrsearch: `filetype:bitmap ${sorgu}`, gsrnamespace: '6', gsrlimit: '20' }),
   });
-  const j = await (await fetch(`https://commons.wikimedia.org/w/api.php?${p}`, { headers: { 'user-agent': UA } })).json();
+  const j = await (await fetch(`https://commons.wikimedia.org/w/api.php?${p}`, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20000) })).json();
   const sayfalar = Object.values(j.query?.pages || {}).sort((a, b) => (a.index || 0) - (b.index || 0));
   for (const s of sayfalar) {
     const i = s.imageinfo?.[0];
@@ -33,7 +33,7 @@ async function commonsAra(sorgu, kesinDosya) {
 
 async function openverseAra(sorgu) {
   const p = new URLSearchParams({ q: sorgu, license_type: 'commercial', size: 'large', aspect_ratio: 'wide', page_size: '10' });
-  const j = await (await fetch(`https://api.openverse.org/v1/images/?${p}`, { headers: { 'user-agent': UA } })).json();
+  const j = await (await fetch(`https://api.openverse.org/v1/images/?${p}`, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20000) })).json();
   const r = (j.results || []).find(r => r.width >= 1200 && /jpe?g/i.test(r.filetype || r.url));
   return r && { url: r.url, yazar: (r.creator || 'Bilinmiyor').slice(0, 80), lisans: `CC ${r.license.toUpperCase()} ${r.license_version || ''}`.trim(), kaynak: r.foreign_landing_url, platform: r.source === 'flickr' ? 'Flickr' : 'Openverse' };
 }
@@ -63,7 +63,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       if (!bulunan) { console.log(`✗ ${id}: görsel bulunamadı (${sorgu})`); continue; }
       const gecici = `.onbellek/${id}.jpg`;
       await mkdir('.onbellek', { recursive: true });
-      await writeFile(gecici, Buffer.from(await (await fetch(bulunan.url, { headers: { 'user-agent': UA } })).arrayBuffer()));
+      await writeFile(gecici, Buffer.from(await (await fetch(bulunan.url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20000) })).arrayBuffer()));
       const { url, ...bilgiler } = bulunan;
       kunye[id] = { ...bilgiler, ...isle(id, gecici) };
       await rm(gecici);
