@@ -295,23 +295,21 @@
     addEventListener('resize', imlecKoy);
 
     const suz = gecis => {
-      const uygula = () => {
-        let sayi = 0;
-        gonderiler.forEach(g => {
-          const gor = (!durum.sekme || (durum.sekme === 'kaydedilen' ? kayitli.has(g.dataset.id) : g.dataset.kat === durum.sekme))
-            && (!durum.konu || g.dataset.konu.split(' ').includes(durum.konu))
-            && durum.kelimeler.every(k => metin.get(g).includes(k));
-          g.hidden = !gor;
-          sayi += gor;
-        });
-        bos.hidden = sayi > 0;
-        bos.textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
-        // Sekmeler yapışık durumdaysa akışın başına dön
-        const ust = scrollY + sekme.previousElementSibling.getBoundingClientRect().bottom;
-        if (scrollY > ust) scrollTo({ top: ust, behavior: 'instant' });
-      };
-      if (gecis && !azHareket && document.startViewTransition) document.startViewTransition(uygula);
-      else uygula();
+      let sayi = 0;
+      gonderiler.forEach(g => {
+        const gor = (!durum.sekme || (durum.sekme === 'kaydedilen' ? kayitli.has(g.dataset.id) : g.dataset.kat === durum.sekme))
+          && (!durum.konu || g.dataset.konu.split(' ').includes(durum.konu))
+          && durum.kelimeler.every(k => metin.get(g).includes(k));
+        g.hidden = !gor;
+        if (gor) g.style.setProperty('--sira', Math.min(sayi, 6));
+        sayi += gor;
+      });
+      bos.hidden = sayi > 0;
+      bos.textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
+      // Sekmeler yapışık durumdaysa akışın başına dön
+      const ust = scrollY + sekme.previousElementSibling.getBoundingClientRect().bottom;
+      if (scrollY > ust) scrollTo({ top: ust, behavior: 'instant' });
+      if (gecis) { akis.classList.remove('suzuldu'); void akis.offsetWidth; akis.classList.add('suzuldu'); }
     };
 
     const ozetGetir = g => {
