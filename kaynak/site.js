@@ -266,10 +266,10 @@
     const l = $('.trend-liste');
     l.scrollBy({ left: l.scrollLeft + l.clientWidth >= l.scrollWidth - 4 ? -l.scrollWidth : l.clientWidth, behavior: azHareket ? 'instant' : 'smooth' });
   });
-  // Akış: bölüm, konu, kayıt ve kelimeye göre süzme; özet, kaydet, paylaş; gün gezgini.
-  const akis = $('.akis');
+  // Akış: bölüm, etiket, kayıt ve kelimeye göre süzme; özet, kaydet, paylaş.
+  const akis = $('.akis'), duzen = $('.akis-duzen');
   if (akis) {
-    const gonderiler = $$('.gonderi', akis), gunler = $$('.akis-gun', akis), bos = $('.akis-bos', akis);
+    const gonderiler = $$('.gonderi', akis), bos = $('.akis-bos', akis), kayitSayi = $('[data-kayit-sayi]');
     const sekme = $('.akis-sekme', akis), sekmeIc = $('.akis-sekme-ic', akis), imlec = $('.akis-sekme-imlec', akis);
     const durum = { sekme: '', konu: '', kelimeler: [] };
     const metin = new Map(gonderiler.map(g => [g, normal(`${$('.gonderi-baslik', g).textContent} ${$('.gonderi-spot', g).textContent}`)]));
@@ -282,6 +282,8 @@
       $('.gonderi-govde', g).insertAdjacentHTML('beforeend', arac);
       if (kayitli.has(g.dataset.id)) $('[data-kaydet]', g).setAttribute('aria-pressed', 'true');
     });
+    const sayiYaz = () => { if (kayitSayi) kayitSayi.textContent = kayitli.size || ''; };
+    sayiYaz();
 
     const imlecKoy = () => {
       const b = $('[aria-pressed="true"]', sekmeIc);
@@ -302,7 +304,6 @@
           g.hidden = !gor;
           sayi += gor;
         });
-        gunler.forEach(s => { s.hidden = !$('.gonderi:not([hidden])', s); });
         bos.hidden = sayi > 0;
         bos.textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
         // Sekmeler yapışık durumdaysa akışın başına dön
@@ -335,7 +336,7 @@
     }
 
     akis.addEventListener('pointerover', e => { const d = e.target.closest('.gonderi-ozet-dugme'); if (d) ozetGetir(d.closest('.gonderi')); });
-    akis.addEventListener('click', async e => {
+    duzen.addEventListener('click', async e => {
       const d = e.target.closest('button');
       if (!d) return;
       const g = d.closest('.gonderi');
@@ -347,8 +348,12 @@
         suz(true);
       } else if (d.dataset.konuSec) {
         durum.konu = durum.konu === d.dataset.konuSec ? '' : d.dataset.konuSec;
-        $$('[data-konu-sec]', akis).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.konuSec === durum.konu)));
+        $$('[data-konu-sec]', duzen).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.konuSec === durum.konu)));
         suz(true);
+      } else if (d.dataset.sekmeGit) {
+        $(`[data-sekme="${d.dataset.sekmeGit}"]`, akis).click();
+      } else if (d.hasAttribute('data-asistan')) {
+        $('#soru-girdi')?.focus();
       } else if (d.classList.contains('gonderi-ozet-dugme')) {
         ozetAc(g, d);
       } else if (d.hasAttribute('data-kaydet')) {
@@ -356,6 +361,7 @@
         kaydet ? kayitli.add(id) : kayitli.delete(id);
         try { localStorage.setItem('kaydedilenler', JSON.stringify([...kayitli])); } catch {}
         d.setAttribute('aria-pressed', String(kaydet));
+        sayiYaz();
         if (durum.sekme === 'kaydedilen') suz(false);
       } else if (d.hasAttribute('data-paylas')) {
         const bag = $('.gonderi-baslik a', g);
@@ -370,20 +376,6 @@
       durum.kelimeler = normal(e.target.value).split(/\s+/).filter(Boolean);
       suz(false);
     });
-
-    // Gün adları: sayfa önbellekten gelse de "Bugün" ve "Dün" doğru kalsın
-    const gunAnahtari = t => t.toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
-    const gunAdlari = { [gunAnahtari(new Date())]: 'Bugün', [gunAnahtari(new Date(Date.now() - 864e5))]: 'Dün' };
-    $$('[data-gun-ad]').forEach(e => { e.textContent = gunAdlari[e.dataset.gunAd] || ''; });
-
-    // Gün gezgini: ekranın ortasındaki günü işaretler
-    const gunBaglari = new Map($$('[data-gun-bag]').map(a => [a.dataset.gunBag, a]));
-    const izleyici = new IntersectionObserver(girdiler => girdiler.forEach(g => {
-      if (!g.isIntersecting) return;
-      gunBaglari.forEach(a => a.removeAttribute('aria-current'));
-      gunBaglari.get(g.target.dataset.gun)?.setAttribute('aria-current', 'location');
-    }), { rootMargin: '-45% 0px -55% 0px' });
-    gunler.forEach(s => izleyici.observe(s));
   }
 
   // Sayfa geçişi: tıklanan haberin görseli yeni sayfadaki kapak görseline dönüşür

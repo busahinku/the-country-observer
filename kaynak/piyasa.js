@@ -31,9 +31,8 @@
   let ozetSozu;
   const ozet = () => ozetSozu ||= getir('/piyasa/ozet');
 
-  // ---------- Ana sayfa bandı ----------
-  const bant = $('[data-borsa-bandi]');
-  if (bant) {
+  // ---------- Ana sayfa bandı ve akıştaki küçük liste ----------
+  for (const bant of $$('[data-borsa-bandi], [data-borsa-mini]')) {
     ozet().then(liste => {
       for (const x of liste) {
         const el = $(`[data-borsa="${x.id}"]`, bant);
@@ -43,7 +42,7 @@
         farkYaz($('.borsa-fark', el), yuzde(x.fiyat, x.onceki));
       }
       bant.classList.remove('yukleniyor');
-      if (azHareket) return;
+      if (azHareket || !bant.matches('[data-borsa-bandi]')) return;
       const iz = $('.borsa-iz', bant);
       for (const el of [...iz.children]) {
         const kopya = el.cloneNode(true);

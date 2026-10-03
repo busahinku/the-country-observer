@@ -149,6 +149,15 @@ function ustAlan(koyu, aktif) {
 </header>`;
 }
 
+// Akış gibi kendi gezinmesi olan sayfalar için yalnızca logo ve tema düğmesi.
+const sadeUst = () => `<header class="ust-alan sade-ust">
+  <div class="kap ust-satir">
+    <span></span>
+    <a class="baslik-logo" href="${u('/')}"><p class="logo">The Country Observer</p></a>
+    <div class="ust-sag"><button class="ikon-dugme" data-tema-dugme aria-label="Koyu ve açık tema arasında geçiş yap">${ikon('moon', 'ikon ay')}${ikon('sun', 'ikon gunes')}</button></div>
+  </div>
+</header>`;
+
 function yapiskanCubuk(aktif) {
   const nav = navOgeleri(aktif);
   return `<div class="yapiskan" aria-hidden="true" inert>
@@ -225,7 +234,7 @@ async function sesDalgalariniHazirla(haberler) {
   SES_DALGALARI = Object.fromEntries(Object.entries(onbellek).map(([id, v]) => [id, v.dalga]));
 }
 
-function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorselYolu, tur = 'website', jsonld, onYukle = '', yapiskan = true }) {
+function sayfa({ baslik, aciklama, yol, icerik, koyu = false, aktif = '', gorselYolu, tur = 'website', jsonld, onYukle = '', yapiskan = true, sade = false }) {
   const tamBaslik = baslik ? `${baslik} | ${SITE_ADI}` : `${SITE_ADI} | Türkiye'nin bağımsız haber gazetesi`;
   const og = tamAdres(gorselYolu || '/favicon.svg');
   return `<!doctype html>
@@ -255,7 +264,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(
 ${SPRITE}
 <a class="atla" href="#icerik">İçeriğe geç</a>
 ${yapiskan ? yapiskanCubuk(aktif) : ''}
-${koyu ? '' : ustAlan(false, aktif)}
+${koyu ? '' : sade ? sadeUst() : ustAlan(false, aktif)}
 <main id="icerik">
 ${icerik}
 </main>
@@ -271,7 +280,7 @@ ${altAlan()}
 </div>
 ${pencereler()}
 <script src="${u(`/site.js?v=${VARLIK_SURUM}`)}" defer></script>
-${yol === '/' || yol === '/piyasalar/' ? `<script src="${u(`/piyasa.js?v=${VARLIK_SURUM}`)}" defer></script>` : ''}
+${['/', '/piyasalar/', '/akis/'].includes(yol) ? `<script src="${u(`/piyasa.js?v=${VARLIK_SURUM}`)}" defer></script>` : ''}
 </body>
 </html>`;
 }
@@ -536,14 +545,17 @@ const siteHaritasi = haberler => `<?xml version="1.0" encoding="UTF-8"?><urlset 
 
 const KAT_IKON = { gundem: 'newspaper', politika: 'landmark', ekonomi: 'trending-up', dunya: 'globe', spor: 'trophy', teknoloji: 'cpu', 'kultur-sanat': 'palette', yasam: 'leaf', saglik: 'heart-pulse', analiz: 'pen-line' };
 const saatBicim = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' });
-const gunAdi = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long', timeZone: 'Europe/Istanbul' });
-const gunAnahtari = d => d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
 const sade = s => s.toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i');
 
 // Konu daireleri için başlık ve spottaki özel adlar. Cümle başındaki kelime yalnızca ek almışsa
 // ("Gazze'de") ya da büyük harfle yazılmışsa ("NATO") sayılır.
 // ponytail: büyük harf sezgisi; yanlış eşleşme artarsa haberlere elle `etiketler` girilmeli.
 const GENEL = new Set(['turkiye', 'turk', 'turkiyenin', 'cumhurbaskani', 'bakan', 'bakani', 'baskani', 'baskan', 'genel', 'milli', 'ulusal', 'dunya', 'son', 'yeni', 'bakanligi', 'mudurlugu', 'universitesi', 'ilk', 'dr', 'prof', 'doc', 'avrupa', 'kupasi', 'ligi', 'sampiyonasi', 'merkezi', 'baskanligi', 'kurulu', 'kurul', 'muduru', 'mudur', 'bati', 'dogu', 'kuzey', 'guney', 'guneydogu',
+  'parti', 'partisi', 'yardimcisi', 'saglik', 'savunma', 'vakfi', 'devlet', 'devleti', 'hastanesi', 'uluslararasi', 'sozcusu', 'stadi', 'merkez', 'yilmaz', 'seria',
+  'kurumu', 'birligi', 'federasyonu', 'meclisi', 'komisyonu', 'sirketi', 'kulubu', 'konseyi', 'ordusu', 'mahkemesi', 'belediyesi', 'valiligi', 'festivali',
+  'haftasi', 'gunu', 'kuvvetleri', 'cumhuriyeti', 'hukumeti', 'ofisi', 'sanayi', 'ticaret', 'enerji', 'egitim', 'aile', 'adalet', 'icisleri', 'disisleri',
+  'tarim', 'ulastirma', 'cevre', 'hazine', 'maliye', 'spor', 'genclik', 'kultur', 'turizm', 'teknoloji', 'bilim', 'altyapi', 'ozel', 'kamu', 'halk',
+  'sosyal', 'takimi', 'mehmet', 'ahmet', 'mustafa', 'ali', 'belediye', 'cumhuriyet', 'bankasi', 'banka', 'grubu', 'grup',
   'ocak', 'subat', 'mart', 'nisan', 'mayis', 'haziran', 'temmuz', 'agustos', 'eylul', 'ekim', 'kasim', 'aralik']);
 function ozelAdlar(metin) {
   const adlar = new Map();
@@ -566,22 +578,18 @@ function akisSayfasi(haberler) {
     adlar.set(h, ozelAdlar(`${h.baslik}. ${h.spot}`));
     for (const [k, ad] of adlar.get(h)) { say.set(k, (say.get(k) || 0) + 1); adi.set(k, ad); }
   }
-  const konular = [...say].filter(([, n]) => n >= 5).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k]) => k);
+  const konular = [...say].filter(([, n]) => n >= 4).sort((a, b) => b[1] - a[1]).slice(0, 24).map(([k]) => k);
+  const konuHaberleri = k => haberler.filter(h => adlar.get(h).has(k));
+  const enSik = dizi => [...dizi.reduce((m, x) => m.set(x, (m.get(x) || 0) + 1), new Map())].sort((a, b) => b[1] - a[1])[0][0];
+  const etiket = k => `<span class="diyez" aria-hidden="true">#</span>${kacis(adi.get(k))}`;
   const resimli = new Set();
-  const konuHtml = konular.map(k => {
+  const konuHtml = konular.slice(0, 12).map(k => {
     const adaylar = haberler.filter(h => h.gorsel && adlar.get(h).has(k));
     const h = adaylar.find(x => !resimli.has(x.id)) || adaylar[0];
     if (h) resimli.add(h.id);
     return `<li><button type="button" class="konu" data-konu-sec="${k}" aria-pressed="false"><span class="konu-halka">${h ? `<img src="${u(`/gorseller/${h.gorsel.id}-480.webp`)}" alt="" width="58" height="58" decoding="async" style="background:${h.gorsel.renk}">` : ''}</span><span class="konu-ad">${kacis(adi.get(k))}</span></button></li>`;
   }).join('');
 
-  const gunler = [];
-  for (const h of haberler) {
-    const g = gunAnahtari(h.tarih);
-    if (gunler.at(-1)?.g !== g) gunler.push({ g, liste: [] });
-    gunler.at(-1).liste.push(h);
-  }
-  const enCok = Math.max(...gunler.map(g => g.liste.length));
   const sekmeler = [['', 'Tümü'], ...Object.entries(KATEGORILER).filter(([k]) => haberler.some(h => h.kategori === k)), ['kaydedilen', 'Kaydedilenler']];
 
   // Kaydet, paylaş ve özet düğmeleri JS olmadan işe yaramadığı için site.js tarafından eklenir.
@@ -596,23 +604,38 @@ ${h.gorsel ? `<div class="gonderi-gorsel">${gorsel(h, { sizes: '(max-width: 640p
 </article>`;
 
   const icerik = `<div class="kap akis-duzen">
+  <aside class="akis-sol" aria-label="Gezinme">
+    <nav class="sol-nav" aria-label="Akış menüsü"><ul>
+      <li><a href="${u('/akis/')}" aria-current="page">${ikon('activity')}Akış</a></li>
+      <li><a href="${u('/')}">${ikon('house')}Ana sayfa</a></li>
+      <li><button type="button" data-sekme-git="kaydedilen">${ikon('bookmark')}Kaydedilenler<span class="sol-sayi" data-kayit-sayi></span></button></li>
+      <li><button type="button" data-asistan>${ikon('message-circle')}Asistana sor</button></li>
+    </ul></nav>
+    <section class="sol-kutu" aria-labelledby="sol-piyasa">
+      <h2 id="sol-piyasa"><a href="${u('/piyasalar/')}">Piyasalar${ikon('arrow-up-right')}</a></h2>
+      <ul class="borsa-mini yukleniyor" data-borsa-mini>${BORSA.filter(([id]) => ['xu100', 'usdtry', 'eurtry', 'gram-altin', 'brent', 'bitcoin'].includes(id)).map(([id, ad, tur]) => `<li><a href="${u(`/piyasalar/#${id}`)}" data-borsa="${id}">${borsaIkon(tur)}<span class="borsa-ad">${kacis(ad)}</span><span class="borsa-deger">—</span><span class="borsa-fark"></span></a></li>`).join('')}</ul>
+    </section>
+  </aside>
   <section class="akis" aria-labelledby="akis-baslik">
     <h1 class="gizli" id="akis-baslik">Akış</h1>
     ${konular.length ? `<ul class="konu-liste" aria-label="Konular">${konuHtml}</ul>` : ''}
     <div class="akis-sekme" role="group" aria-label="Bölüme göre süz"><div class="akis-sekme-ic">${sekmeler.map(([k, ad], i) => `<button type="button" data-sekme="${k}" aria-pressed="${i === 0}">${k === 'kaydedilen' ? ikon('bookmark') : ''}${ad}</button>`).join('')}<span class="akis-sekme-imlec" aria-hidden="true"></span></div></div>
-    ${gunler.map(({ g, liste }) => `<section class="akis-gun" id="gun-${g}" data-gun="${g}" aria-label="${gunAdi.format(liste[0].tarih)}">
-    ${liste.map(gonderi).join('')}
-    </section>`).join('')}
+    ${haberler.map(gonderi).join('')}
     <p class="akis-bos" hidden></p>
   </section>
-  <aside class="akis-ray" aria-label="Akışta gezin">
+  <aside class="akis-ray" aria-label="Keşfet">
     <label class="akis-ara">${ikon('search')}<span class="gizli">Akışta ara</span><input type="search" placeholder="Akışta ara" autocomplete="off" enterkeyhint="search" data-akis-ara></label>
-    <nav class="ray-kutu" aria-label="Günler"><h2>Günler</h2><ol class="gun-liste">${gunler.map(({ g, liste }) => `<li><a href="#gun-${g}" data-gun-bag="${g}"><span><span data-gun-ad="${g}"></span>${gunAdi.format(liste[0].tarih)}</span><b>${liste.length}</b><i style="--oran:${(liste.length / enCok).toFixed(3)}"></i></a></li>`).join('')}</ol></nav>
+    <section class="ray-kutu" aria-labelledby="ray-gundem"><h2 id="ray-gundem">Gündemde</h2><ol class="gundem-liste">${konular.slice(0, 5).map((k, i) => {
+      const liste = konuHaberleri(k);
+      return `<li><button type="button" data-konu-sec="${k}" aria-pressed="false"><span class="gundem-ust">${i + 1} · ${kacis(enSik(liste.map(h => h.kategoriAd)))}</span><span class="gundem-ad">${etiket(k)}</span><span class="gundem-say">${liste.length} haber</span></button></li>`;
+    }).join('')}</ol></section>
+    ${konular.length > 5 ? `<section class="ray-kutu" aria-labelledby="ray-etiket"><h2 id="ray-etiket">Etiketler</h2><ul class="etiket-bulutu">${konular.slice(5).map(k => `<li><button type="button" class="etiket" data-konu-sec="${k}" aria-pressed="false">${etiket(k)}</button></li>`).join('')}</ul></section>` : ''}
+    <nav class="ray-alt" aria-label="Gazete"><a href="${u('/hakkimizda/')}">Hakkımızda</a><a href="${u('/hakkimizda/#yayin-ilkeleri')}">Yayın ilkeleri</a><a href="${u('/rss.xml')}">RSS</a><span>© ${new Date().getFullYear()} The Country Observer</span></nav>
   </aside>
 </div>`;
   return sayfa({
-    baslik: 'Akış', yol: '/akis/', aktif: 'akis', icerik, yapiskan: false,
-    aciklama: 'Son günlerin haberleri tek akışta, en yenisi üstte. Bölüme, konuya ve güne göre süzün.',
+    baslik: 'Akış', yol: '/akis/', aktif: 'akis', icerik, yapiskan: false, sade: true,
+    aciklama: 'Son günlerin haberleri tek akışta, en yenisi üstte. Bölüme ve etikete göre süzün.',
   });
 }
 
