@@ -266,6 +266,126 @@
     const l = $('.trend-liste');
     l.scrollBy({ left: l.scrollLeft + l.clientWidth >= l.scrollWidth - 4 ? -l.scrollWidth : l.clientWidth, behavior: azHareket ? 'instant' : 'smooth' });
   });
+  // Akış: bölüm, konu, kayıt ve kelimeye göre süzme; özet, kaydet, paylaş; gün gezgini.
+  const akis = $('.akis');
+  if (akis) {
+    const gonderiler = $$('.gonderi', akis), gunler = $$('.akis-gun', akis), bos = $('.akis-bos', akis);
+    const sekme = $('.akis-sekme', akis), sekmeIc = $('.akis-sekme-ic', akis), imlec = $('.akis-sekme-imlec', akis);
+    const durum = { sekme: '', konu: '', kelimeler: [] };
+    const metin = new Map(gonderiler.map(g => [g, normal(`${$('.gonderi-baslik', g).textContent} ${$('.gonderi-spot', g).textContent}`)]));
+    const ozetler = new Map();
+    let kayitli;
+    try { kayitli = new Set(JSON.parse(localStorage.getItem('kaydedilenler')) || []); } catch { kayitli = new Set(); }
+    const svg = (ad, sinif = 'ikon') => `<svg class="${sinif}" aria-hidden="true"><use href="#i-${ad}"/></svg>`;
+    const arac = `<div class="gonderi-arac"><button type="button" class="gonderi-ozet-dugme" aria-expanded="false">Özet${svg('chevron-down')}</button><button type="button" class="ikon-dugme" data-kaydet aria-pressed="false" aria-label="Kaydet">${svg('bookmark', 'ikon bos')}${svg('bookmark-dolu', 'ikon dolu')}</button><button type="button" class="ikon-dugme" data-paylas aria-label="Paylaş">${svg('share', 'ikon paylas')}${svg('check', 'ikon tamam')}</button></div>`;
+    gonderiler.forEach(g => {
+      $('.gonderi-govde', g).insertAdjacentHTML('beforeend', arac);
+      if (kayitli.has(g.dataset.id)) $('[data-kaydet]', g).setAttribute('aria-pressed', 'true');
+    });
+
+    const imlecKoy = () => {
+      const b = $('[aria-pressed="true"]', sekmeIc);
+      imlec.style.width = `${b.offsetWidth - 20}px`;
+      imlec.style.transform = `translateX(${b.offsetLeft + 10}px)`;
+    };
+    imlecKoy();
+    document.fonts?.ready.then(imlecKoy);
+    addEventListener('resize', imlecKoy);
+
+    const suz = gecis => {
+      const uygula = () => {
+        let sayi = 0;
+        gonderiler.forEach(g => {
+          const gor = (!durum.sekme || (durum.sekme === 'kaydedilen' ? kayitli.has(g.dataset.id) : g.dataset.kat === durum.sekme))
+            && (!durum.konu || g.dataset.konu.split(' ').includes(durum.konu))
+            && durum.kelimeler.every(k => metin.get(g).includes(k));
+          g.hidden = !gor;
+          sayi += gor;
+        });
+        gunler.forEach(s => { s.hidden = !$('.gonderi:not([hidden])', s); });
+        bos.hidden = sayi > 0;
+        bos.textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
+        // Sekmeler yapışık durumdaysa akışın başına dön
+        const ust = scrollY + sekme.previousElementSibling.getBoundingClientRect().bottom;
+        if (scrollY > ust) scrollTo({ top: ust, behavior: 'instant' });
+      };
+      if (gecis && !azHareket && document.startViewTransition) document.startViewTransition(uygula);
+      else uygula();
+    };
+
+    const ozetGetir = g => {
+      if (!ozetler.has(g)) ozetler.set(g, fetch(`${TABAN}/yardim/${g.dataset.id}.json`)
+        .then(y => y.ok ? y.json() : Promise.reject())
+        .then(v => v.govde.split(/\n\s*\n/).filter(p => !/^(##|>|- )/.test(p.trim())).slice(0, 3)
+          .map(p => `<p>${kacis(p.replace(/\*\*?|\[|\]\([^)]*\)/g, '').trim())}</p>`).join(''))
+        .catch(() => { ozetler.delete(g); return '<p>Özet yüklenemedi.</p>'; }));
+      return ozetler.get(g);
+    };
+    async function ozetAc(g, d) {
+      if (!$('.gonderi-ozet', g)) {
+        const id = `ozet-${g.dataset.id}`, metinHtml = await ozetGetir(g);
+        $('.gonderi-govde', g).insertAdjacentHTML('beforeend', `<div class="gonderi-ozet" id="${id}" inert><div class="gonderi-ozet-ic"><div class="gonderi-ozet-metin">${metinHtml}</div>${g.dataset.kaynak ? `<p class="gonderi-kaynak">Kaynak: ${kacis(g.dataset.kaynak)}</p>` : ''}<a class="gonderi-devam" href="${$('.gonderi-baslik a', g).getAttribute('href')}">Haberin tamamı${svg('arrow-right')}</a></div></div>`);
+        d.setAttribute('aria-controls', id);
+        void $('.gonderi-ozet', g).offsetHeight;
+      }
+      const ac = d.getAttribute('aria-expanded') !== 'true';
+      d.setAttribute('aria-expanded', String(ac));
+      g.classList.toggle('acik', ac);
+      $('.gonderi-ozet', g).inert = !ac;
+    }
+
+    akis.addEventListener('pointerover', e => { const d = e.target.closest('.gonderi-ozet-dugme'); if (d) ozetGetir(d.closest('.gonderi')); });
+    akis.addEventListener('click', async e => {
+      const d = e.target.closest('button');
+      if (!d) return;
+      const g = d.closest('.gonderi');
+      if (d.dataset.sekme !== undefined) {
+        durum.sekme = d.dataset.sekme;
+        $$('[data-sekme]', akis).forEach(b => b.setAttribute('aria-pressed', String(b === d)));
+        imlecKoy();
+        sekmeIc.scrollTo({ left: d.offsetLeft - (sekmeIc.clientWidth - d.offsetWidth) / 2, behavior: azHareket ? 'instant' : 'smooth' });
+        suz(true);
+      } else if (d.dataset.konuSec) {
+        durum.konu = durum.konu === d.dataset.konuSec ? '' : d.dataset.konuSec;
+        $$('[data-konu-sec]', akis).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.konuSec === durum.konu)));
+        suz(true);
+      } else if (d.classList.contains('gonderi-ozet-dugme')) {
+        ozetAc(g, d);
+      } else if (d.hasAttribute('data-kaydet')) {
+        const id = g.dataset.id, kaydet = !kayitli.has(id);
+        kaydet ? kayitli.add(id) : kayitli.delete(id);
+        try { localStorage.setItem('kaydedilenler', JSON.stringify([...kayitli])); } catch {}
+        d.setAttribute('aria-pressed', String(kaydet));
+        if (durum.sekme === 'kaydedilen') suz(false);
+      } else if (d.hasAttribute('data-paylas')) {
+        const bag = $('.gonderi-baslik a', g);
+        if (navigator.share) { navigator.share({ title: bag.textContent, url: bag.href }).catch(() => {}); return; }
+        try { await navigator.clipboard.writeText(bag.href); } catch { return; }
+        d.classList.add('kopyalandi');
+        d.setAttribute('aria-label', 'Bağlantı kopyalandı');
+        setTimeout(() => { d.classList.remove('kopyalandi'); d.setAttribute('aria-label', 'Paylaş'); }, 1800);
+      }
+    });
+    $('[data-akis-ara]')?.addEventListener('input', e => {
+      durum.kelimeler = normal(e.target.value).split(/\s+/).filter(Boolean);
+      suz(false);
+    });
+
+    // Gün adları: sayfa önbellekten gelse de "Bugün" ve "Dün" doğru kalsın
+    const gunAnahtari = t => t.toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+    const gunAdlari = { [gunAnahtari(new Date())]: 'Bugün', [gunAnahtari(new Date(Date.now() - 864e5))]: 'Dün' };
+    $$('[data-gun-ad]').forEach(e => { e.textContent = gunAdlari[e.dataset.gunAd] || ''; });
+
+    // Gün gezgini: ekranın ortasındaki günü işaretler
+    const gunBaglari = new Map($$('[data-gun-bag]').map(a => [a.dataset.gunBag, a]));
+    const izleyici = new IntersectionObserver(girdiler => girdiler.forEach(g => {
+      if (!g.isIntersecting) return;
+      gunBaglari.forEach(a => a.removeAttribute('aria-current'));
+      gunBaglari.get(g.target.dataset.gun)?.setAttribute('aria-current', 'location');
+    }), { rootMargin: '-45% 0px -55% 0px' });
+    gunler.forEach(s => izleyici.observe(s));
+  }
+
   // Sayfa geçişi: tıklanan haberin görseli yeni sayfadaki kapak görseline dönüşür
   if (document.startViewTransition !== undefined || 'onpagereveal' in window) {
     document.addEventListener('click', e => {
