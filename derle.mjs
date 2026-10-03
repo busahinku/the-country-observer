@@ -587,7 +587,7 @@ function akisSayfasi(haberler) {
     const adaylar = haberler.filter(h => h.gorsel && adlar.get(h).has(k));
     const h = adaylar.find(x => !resimli.has(x.id)) || adaylar[0];
     if (h) resimli.add(h.id);
-    return `<li><button type="button" class="konu" data-konu-sec="${k}" aria-pressed="false"><span class="konu-halka">${h ? `<img src="${u(`/gorseller/${h.gorsel.id}-480.webp`)}" alt="" width="58" height="58" decoding="async" style="background:${h.gorsel.renk}">` : ''}</span><span class="konu-ad">${kacis(adi.get(k))}</span></button></li>`;
+    return `<li><button type="button" class="konu" data-hikaye="${k}" aria-label="${kacis(adi.get(k))} hikâyelerini aç"><span class="konu-halka">${h ? `<img src="${u(`/gorseller/${h.gorsel.id}-480.webp`)}" alt="" width="58" height="58" decoding="async" style="background:${h.gorsel.renk}">` : ''}</span><span class="konu-ad">${kacis(adi.get(k))}</span></button></li>`;
   }).join('');
 
   const sekmeler = [['', 'Tümü'], ...Object.entries(KATEGORILER).filter(([k]) => haberler.some(h => h.kategori === k)), ['kaydedilen', 'Kaydedilenler']];
@@ -621,7 +621,7 @@ ${h.gorsel ? `<div class="gonderi-gorsel">${gorsel(h, { sizes: '(max-width: 640p
     ${konular.length ? `<ul class="konu-liste" aria-label="Konular">${konuHtml}</ul>` : ''}
     <div class="akis-sekme" role="group" aria-label="Bölüme göre süz"><div class="akis-sekme-ic">${sekmeler.map(([k, ad], i) => `<button type="button" data-sekme="${k}" aria-pressed="${i === 0}">${k === 'kaydedilen' ? ikon('bookmark') : ''}${ad}</button>`).join('')}<span class="akis-sekme-imlec" aria-hidden="true"></span></div></div>
     ${haberler.map(gonderi).join('')}
-    <p class="akis-bos" hidden></p>
+    <div class="akis-bos" hidden><p></p><button type="button" class="dugme" data-temizle>Tümünü göster</button></div>
   </section>
   <aside class="akis-ray" aria-label="Keşfet">
     <label class="akis-ara">${ikon('search')}<span class="gizli">Akışta ara</span><input type="search" placeholder="Akışta ara" autocomplete="off" enterkeyhint="search" data-akis-ara></label>
@@ -633,8 +633,33 @@ ${h.gorsel ? `<div class="gonderi-gorsel">${gorsel(h, { sizes: '(max-width: 640p
     <nav class="ray-alt" aria-label="Gazete"><a href="${u('/hakkimizda/')}">Hakkımızda</a><a href="${u('/hakkimizda/#yayin-ilkeleri')}">Yayın ilkeleri</a><a href="${u('/rss.xml')}">RSS</a><span>© ${new Date().getFullYear()} The Country Observer</span></nav>
   </aside>
 </div>`;
+  // Konu daireleri bu pencerede, akıştaki gönderilerin verisiyle hikâye olarak açılır.
+  const hikaye = `<dialog class="hikaye" id="hikaye" aria-label="Haber hikâyeleri">
+  <img class="hikaye-arka" alt="" aria-hidden="true">
+  <div class="hikaye-sahne">
+    <button type="button" class="hikaye-ok" data-hikaye-git="-1" aria-label="Önceki haber">${ikon('chevron-left')}</button>
+    <div class="hikaye-kart">
+      <img class="hikaye-gorsel" alt="">
+      <div class="hikaye-ust">
+        <div class="hikaye-cubuklar" aria-hidden="true"></div>
+        <div class="hikaye-kimlik">
+          <img class="hikaye-avatar" alt="" width="32" height="32"><span class="hikaye-konu"></span><span class="hikaye-zaman"></span>
+          <button type="button" class="ikon-dugme" data-hikaye-durdur aria-label="Duraklat">${ikon('pause', 'ikon durdur')}${ikon('play', 'ikon oynat')}</button>
+          <form method="dialog"><button class="ikon-dugme" aria-label="Kapat">${ikon('x')}</button></form>
+        </div>
+      </div>
+      <div class="hikaye-metin" aria-live="polite">
+        <p class="hikaye-kategori"></p>
+        <h2 class="hikaye-baslik"></h2>
+        <p class="hikaye-spot"></p>
+        <a class="hikaye-oku" href="${u('/')}">Haberi oku${ikon('arrow-up-right')}</a>
+      </div>
+    </div>
+    <button type="button" class="hikaye-ok" data-hikaye-git="1" aria-label="Sonraki haber">${ikon('chevron-right')}</button>
+  </div>
+</dialog>`;
   return sayfa({
-    baslik: 'Akış', yol: '/akis/', aktif: 'akis', icerik, yapiskan: false, sade: true,
+    baslik: 'Akış', yol: '/akis/', aktif: 'akis', icerik: icerik + hikaye, yapiskan: false, sade: true,
     aciklama: 'Son günlerin haberleri tek akışta, en yenisi üstte. Bölüme ve etikete göre süzün.',
   });
 }

@@ -294,6 +294,17 @@
     document.fonts?.ready.then(imlecKoy);
     addEventListener('resize', imlecKoy);
 
+    const sekmeSec = k => {
+      durum.sekme = k;
+      const d = $(`[data-sekme="${k}"]`, akis);
+      $$('[data-sekme]', akis).forEach(b => b.setAttribute('aria-pressed', String(b === d)));
+      imlecKoy();
+      sekmeIc.scrollTo({ left: d.offsetLeft - (sekmeIc.clientWidth - d.offsetWidth) / 2, behavior: azHareket ? 'instant' : 'smooth' });
+    };
+    const konuSec = k => {
+      durum.konu = k;
+      $$('[data-konu-sec]', duzen).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.konuSec === k)));
+    };
     const suz = gecis => {
       let sayi = 0;
       gonderiler.forEach(g => {
@@ -305,7 +316,7 @@
         sayi += gor;
       });
       bos.hidden = sayi > 0;
-      bos.textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
+      $('p', bos).textContent = durum.sekme === 'kaydedilen' && !kayitli.size ? 'Kaydettiğiniz haberler burada görünür.' : 'Bu seçime uyan haber yok.';
       // Sekmeler yapışık durumdaysa akışın başına dön
       const ust = scrollY + sekme.previousElementSibling.getBoundingClientRect().bottom;
       if (scrollY > ust) scrollTo({ top: ust, behavior: 'instant' });
@@ -339,14 +350,18 @@
       if (!d) return;
       const g = d.closest('.gonderi');
       if (d.dataset.sekme !== undefined) {
-        durum.sekme = d.dataset.sekme;
-        $$('[data-sekme]', akis).forEach(b => b.setAttribute('aria-pressed', String(b === d)));
-        imlecKoy();
-        sekmeIc.scrollTo({ left: d.offsetLeft - (sekmeIc.clientWidth - d.offsetWidth) / 2, behavior: azHareket ? 'instant' : 'smooth' });
+        sekmeSec(d.dataset.sekme);
         suz(true);
       } else if (d.dataset.konuSec) {
-        durum.konu = durum.konu === d.dataset.konuSec ? '' : d.dataset.konuSec;
-        $$('[data-konu-sec]', duzen).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.konuSec === durum.konu)));
+        // Etiket seçilince bölüm süzgeci sıfırlanır; ikisi birlikte çoğu zaman boş sonuç verir.
+        konuSec(durum.konu === d.dataset.konuSec ? '' : d.dataset.konuSec);
+        if (durum.konu && durum.sekme && durum.sekme !== 'kaydedilen') sekmeSec('');
+        suz(true);
+      } else if (d.hasAttribute('data-temizle')) {
+        sekmeSec(''); konuSec('');
+        const ara = $('[data-akis-ara]');
+        if (ara) ara.value = '';
+        durum.kelimeler = [];
         suz(true);
       } else if (d.dataset.sekmeGit) {
         $(`[data-sekme="${d.dataset.sekmeGit}"]`, akis).click();
@@ -374,6 +389,108 @@
       durum.kelimeler = normal(e.target.value).split(/\s+/).filter(Boolean);
       suz(false);
     });
+
+    // Hikâyeler: konu dairesi, o konunun görselli haberlerini tam ekran ve kendiliğinden ilerleyen kartlarla açar.
+    // Veri akıştaki gönderilerden okunur; ayrıca indirilen bir şey yok.
+    const hikaye = $('#hikaye'), daireler = $$('[data-hikaye]', akis);
+    if (hikaye && daireler.length) {
+      const SURE = 7000;
+      hikaye.style.setProperty('--hikaye-sure', `${SURE}ms`);
+      const h = k => $(k, hikaye);
+      const kart = h('.hikaye-kart'), gorsel = h('.hikaye-gorsel'), metinAlani = h('.hikaye-metin'), cubuklar = h('.hikaye-cubuklar');
+      const konuHaberleri = k => gonderiler.filter(g => g.dataset.konu.split(' ').includes(k) && $('.gonderi-gorsel img', g));
+      let goruldu;
+      try { goruldu = JSON.parse(localStorage.getItem('gorulen-hikayeler')) || {}; } catch { goruldu = {}; }
+      const halkalar = () => daireler.forEach(d => d.classList.toggle('goruldu', goruldu[d.dataset.hikaye] === konuHaberleri(d.dataset.hikaye)[0]?.dataset.id));
+      halkalar();
+      const goreliZaman = t => {
+        const dk = Math.round((Date.parse(t) - Date.now()) / 60000);
+        return dk > -60 ? goreli.format(Math.min(-1, dk), 'minute') : dk > -2880 ? goreli.format(Math.round(dk / 60), 'hour') : goreli.format(Math.round(dk / 1440), 'day');
+      };
+      const resimYolu = (g, boy) => $('.gonderi-gorsel img', g).getAttribute('src').replace('-960.webp', `-${boy}.webp`);
+      const resimHazirla = src => new Promise(tamam => { const r = new Image(); r.onload = r.onerror = tamam; r.src = src; if (r.complete) tamam(); });
+      const yeniden = (el, sinif) => { el.classList.remove(sinif); void el.offsetWidth; el.classList.add(sinif); };
+      let konuSira = 0, sira = 0, liste = [], adim = 0;
+
+      async function goster() {
+        const g = liste[sira], benim = ++adim, src = resimYolu(g, 960);
+        cubuklar.innerHTML = liste.map((_, i) => `<span class="${i < sira ? 'dolu' : i === sira ? 'simdi' : ''}"><i></i></span>`).join('');
+        hikaye.classList.add('yukleniyor');
+        await resimHazirla(src);
+        if (benim !== adim) return;
+        gorsel.src = src;
+        h('.hikaye-arka').src = resimYolu(g, 480);
+        h('.hikaye-kategori').textContent = $(`[data-sekme="${g.dataset.kat}"]`, akis)?.textContent || '';
+        h('.hikaye-baslik').textContent = $('.gonderi-baslik', g).textContent;
+        h('.hikaye-spot').textContent = $('.gonderi-spot', g).textContent;
+        h('.hikaye-oku').href = $('.gonderi-baslik a', g).href;
+        h('.hikaye-zaman').textContent = goreliZaman($('time', g).dateTime);
+        yeniden(gorsel, 'oynuyor');
+        yeniden(metinAlani, 'oynuyor');
+        hikaye.classList.remove('yukleniyor');
+        // Akışta önbelleğe girmiş 960'lık görsel hemen gösterilir, keskin sürüm hazır olunca yerine geçer.
+        resimHazirla(resimYolu(g, 1600)).then(() => { if (benim === adim) gorsel.src = resimYolu(g, 1600); });
+        if (liste[sira + 1]) resimHazirla(resimYolu(liste[sira + 1], 960));
+      }
+      function konuAc(i, yon = 0, sondan = false) {
+        if (i < 0) return;
+        if (i >= daireler.length) { hikaye.close(); return; }
+        const d = daireler[i], k = d.dataset.hikaye;
+        konuSira = i; liste = konuHaberleri(k).slice(0, 10);
+        sira = sondan ? liste.length - 1 : 0;
+        h('.hikaye-avatar').src = $('img', d)?.getAttribute('src') || '';
+        h('.hikaye-konu').textContent = `#${$('.konu-ad', d).textContent}`;
+        goruldu[k] = liste[0].dataset.id;
+        try { localStorage.setItem('gorulen-hikayeler', JSON.stringify(goruldu)); } catch {}
+        halkalar();
+        if (yon) yeniden(kart, yon > 0 ? 'ileri' : 'geri');
+        goster();
+      }
+      const sonraki = () => sira < liste.length - 1 ? (sira++, goster()) : konuAc(konuSira + 1, 1);
+      const onceki = () => sira > 0 ? (sira--, goster()) : konuSira > 0 ? konuAc(konuSira - 1, -1, true) : goster();
+      const durdur = acik => {
+        hikaye.classList.toggle('durdu', acik);
+        h('[data-hikaye-durdur]').setAttribute('aria-label', acik ? 'Oynat' : 'Duraklat');
+      };
+
+      daireler.forEach((d, i) => d.addEventListener('click', () => {
+        durdur(false);
+        hikaye.showModal();
+        konuAc(i);
+      }));
+      cubuklar.addEventListener('animationend', sonraki);
+      hikaye.addEventListener('click', e => {
+        const d = e.target.closest('[data-hikaye-git]');
+        if (d) (d.dataset.hikayeGit > 0 ? sonraki : onceki)();
+        else if (e.target.closest('[data-hikaye-durdur]')) durdur(!hikaye.classList.contains('durdu'));
+        else if (e.target.classList.contains('hikaye-sahne')) hikaye.close();
+      });
+      hikaye.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') sonraki();
+        else if (e.key === 'ArrowLeft') onceki();
+        else if (e.key === ' ' && !e.target.closest('a,button')) { e.preventDefault(); durdur(!hikaye.classList.contains('durdu')); }
+      });
+      hikaye.addEventListener('close', () => { adim++; gorsel.classList.remove('oynuyor'); });
+      document.addEventListener('visibilitychange', () => hikaye.classList.toggle('basili', document.hidden));
+
+      // Dokunma: sol üçte bir geri, kalanı ileri; basılı tutmak durdurur; yana kaydırmak konu, aşağı kaydırmak kapatır.
+      let bas = null;
+      kart.addEventListener('pointerdown', e => {
+        if (e.target.closest('a,button')) return;
+        bas = { x: e.clientX, y: e.clientY, t: Date.now() };
+        hikaye.classList.add('basili');
+      });
+      kart.addEventListener('pointerup', e => {
+        hikaye.classList.remove('basili');
+        if (!bas) return;
+        const dx = e.clientX - bas.x, dy = e.clientY - bas.y, uzun = Date.now() - bas.t > 300;
+        bas = null;
+        if (dy > 90 && dy > Math.abs(dx)) hikaye.close();
+        else if (Math.abs(dx) > 60) konuAc(konuSira + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+        else if (!uzun) (e.clientX - kart.getBoundingClientRect().left < kart.clientWidth / 3 ? onceki : sonraki)();
+      });
+      kart.addEventListener('pointercancel', () => { bas = null; hikaye.classList.remove('basili'); });
+    }
   }
 
   // Sayfa geçişi: tıklanan haberin görseli yeni sayfadaki kapak görseline dönüşür
