@@ -546,3 +546,11 @@ main :is(h1,h2,h3) a:hover,.analiz-liste a:hover,.trend-liste a:hover span{text-
 }
 .arama-baslik{margin:14px 10px 6px;font:600 11.5px/1 var(--f-inter);letter-spacing:.06em;text-transform:uppercase;color:var(--soluk)}
 @media (max-width:1100px){.alt-ic{grid-template-columns:1fr}}
+.sayfalama{display:flex;align-items:center;justify-content:center;gap:10px;padding-top:56px;font:500 14px/1 var(--f-inter);font-variant-numeric:tabular-nums}
+.sayfalama ol{display:flex;gap:4px;list-style:none;padding:0}
+.sayfalama :is(a,span[aria-current]),.sayfa-bosluk{min-width:40px;height:40px;display:grid;place-items:center;padding:0 6px;border-radius:999px;color:var(--ikincil);transition:background-color .2s,color .2s}
+.sayfalama a:hover{background:color-mix(in srgb,var(--metin) 7%,transparent);color:var(--metin)}
+.sayfalama span[aria-current]{background:var(--metin);color:var(--zemin)}
+.sayfa-ok{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--cizgi);color:var(--metin)}
+.sayfa-ok:empty{border:0}
+.sayfa-ok .ikon{width:18px;height:18px}

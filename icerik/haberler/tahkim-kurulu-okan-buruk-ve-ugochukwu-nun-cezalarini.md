@@ -1,0 +1,14 @@
+---
+baslik: Tahkim Kurulu, Okan Buruk ve Ugochukwu’nun cezalarını onadı
+spot: Galatasaray Teknik Direktörü Okan Buruk’un bir maçlık soyunma odası yasağı ve 100 bin liralık para cezası kesinleşti. Trabzonspor’un oyuncusu Ugochukwu’nun iki maçlık men cezası da onandı.
+kategori: spor
+yazar: Spor Servisi
+tarih: 2026-10-02T03:49:53.000Z
+etiketler: []
+gorsel_sorgu: Okan Buruk
+gorsel_aciklama: Arşiv fotoğrafı.
+kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/spor/tff-tahkim-kurulu-okan-buruk-ve-ugochukwunun-cezalarini-onadi/4076387"}]
+---
+TFF Tahkim Kurulu, Galatasaray Teknik Direktörü Okan Buruk ile Trabzonsporlu Lesley Ugochukwu’nun cezalarına yaptıkları itirazları reddetti.
+
+Süper Lig’in 6. haftasındaki Trabzonspor maçında kırmızı kart gören Buruk’a hakeme yönelik sportmenliğe aykırı hareket nedeniyle verilen bir resmi maçta soyunma odası ve yedek kulübesine giriş yasağı ile 100 bin liralık para cezası onandı. Aynı maçta kırmızı kart gören Ugochukwu’nun iki maçlık men cezası da kesinleşti. Kurul, Galatasaray’a taraftarlarının tezahüratları nedeniyle verilen 350 bin liralık para cezasını da onadı.

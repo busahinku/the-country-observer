@@ -1,0 +1,14 @@
+---
+baslik: Sanders: AIPAC, Netanyahu karşıtı adayları devirmek için 233 milyon dolar harcayacak
+spot: ABD’li Senatör Bernie Sanders, İsrail yanlısı lobinin Michigan’daki ön seçimde Abdul El-Sayed’e karşı 33 milyon dolar harcadığını ama başarılı olamadığını söyledi.
+kategori: dunya
+yazar: Dış Haberler Servisi
+tarih: 2026-10-02T22:44:03.000Z
+etiketler: []
+gorsel_sorgu: Bernie Sanders
+gorsel_aciklama: Arşiv fotoğrafı.
+kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/dunya/abdli-senator-sanders-aipacin-netanyahu-karsiti-adaylari-hedef-aldigini-belirtti/4076647"}]
+---
+ABD’li Senatör Bernie Sanders, İsrail yanlısı lobi grubu AIPAC’in Netanyahu hükümetini eleştiren adayları seçimlerde hedef aldığını söyledi.
+
+Sanders, AIPAC’in Michigan’daki Demokrat Parti ön seçimlerinde Abdul El-Sayed’in kaybetmesi için 33 milyon dolar harcadığını ancak başarılı olamadığını belirtti. Sanders, “AIPAC, Netanyahu’nun aşırılık yanlısı hükümetine karşı sesini yükseltmeye cesaret eden adayları yenilgiye uğratmak için 233 milyon dolar harcamayı planlıyor. Kaybetmeye devam edecekler” dedi ve ABD’nin İsrail’e askeri yardımının sona erdirilmesi çağrısını yineledi.

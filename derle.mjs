@@ -468,23 +468,37 @@ function haberSayfasi(h, haberler) {
   });
 }
 
-function listeSayfasi({ baslik, liste, yol, aktif = '', aciklama }) {
-  const [ilk, ...diger] = liste;
-  const icerik = `<section class="kap kategori-bas">
+// Liste sayfaları 31 haberlik sayfalara bölünür: /kategori/x/, /kategori/x/sayfa/2/ ...
+const SAYFA_BOYU = 31;
+function listeSayfalari({ baslik, liste, yol, aktif = '', aciklama }) {
+  const toplam = Math.max(1, Math.ceil(liste.length / SAYFA_BOYU));
+  const adres = n => n === 1 ? yol : `${yol}sayfa/${n}/`;
+  return Array.from({ length: toplam }, (_, i) => {
+    const n = i + 1, parca = liste.slice(i * SAYFA_BOYU, n * SAYFA_BOYU);
+    const [ilk, ...diger] = n === 1 ? parca : [null, ...parca];
+    const numaralar = Array.from({ length: toplam }, (_, j) => j + 1).filter(j => j === 1 || j === toplam || Math.abs(j - n) <= 2);
+    const gezinme = toplam < 2 ? '' : `<nav class="kap sayfalama" aria-label="Sayfalar">
+  ${n > 1 ? `<a class="sayfa-ok" href="${u(adres(n - 1))}" rel="prev" aria-label="Önceki sayfa">${ikon('chevron-left')}</a>` : '<span class="sayfa-ok" aria-hidden="true"></span>'}
+  <ol>${numaralar.map((j, k) => `${k && j - numaralar[k - 1] > 1 ? '<li class="sayfa-bosluk">…</li>' : ''}<li>${j === n ? `<span aria-current="page">${j}</span>` : `<a href="${u(adres(j))}">${j}</a>`}</li>`).join('')}</ol>
+  ${n < toplam ? `<a class="sayfa-ok" href="${u(adres(n + 1))}" rel="next" aria-label="Sonraki sayfa">${ikon('chevron-right')}</a>` : '<span class="sayfa-ok" aria-hidden="true"></span>'}
+</nav>`;
+    const icerik = `<section class="kap kategori-bas">
   <h1>${baslik}</h1>
-  <p>${liste.length} haber</p>
+  <p>${liste.length} haber${toplam > 1 ? ` · Sayfa ${n}/${toplam}` : ''}</p>
 </section>
 ${ilk ? `<section class="kap bolum">
   <article class="haftanin belir">
     <a class="haftanin-gorsel" href="${ilk.url}">${gorsel(ilk, { sizes: '(max-width: 900px) 100vw, 50vw', oncelikli: true })}</a>
-    <div class="haftanin-metin">${kunyeSatiri(ilk)}<h2><a href="${ilk.url}">${kacis(ilk.baslik)}</a></h2><p class="haftanin-spot">${kacis(ilk.spot)}</p>${altSatir(ilk)}</div>
+    <div class="haftanin-metin">${kunyeSatiri(ilk)}<h2><a href="${ilk.url}">${kacis(ilk.baslik)}</a></h2><p class="haftanin-spot">${kacis(ilk.giris)}</p>${altSatir(ilk)}</div>
   </article>
-</section>` : '<p class="kap bos-durum">Bu bölümde henüz haber yok.</p>'}
-${diger.length ? `<section class="kap bolum"><div class="izgara-4">${diger.map(h => kart(h, '(max-width: 640px) 100px, (max-width: 1024px) 50vw, 25vw')).join('')}</div></section>` : ''}`;
-  return sayfa({ baslik, aciklama, yol, aktif, icerik });
+</section>` : n === 1 ? '<p class="kap bos-durum">Bu bölümde henüz haber yok.</p>' : ''}
+${diger.length ? `<section class="kap bolum"><div class="izgara-4">${diger.map(h => kart(h, '(max-width: 640px) 100px, (max-width: 1024px) 50vw, 25vw')).join('')}</div></section>` : ''}
+${gezinme}`;
+    return [adres(n), sayfa({ baslik: n === 1 ? baslik : `${baslik} (Sayfa ${n})`, aciklama, yol: adres(n), aktif, icerik })];
+  });
 }
 
-const kategoriSayfasi = (k, haberler) => listeSayfasi({
+const kategoriSayfalari = (k, haberler) => listeSayfalari({
   baslik: KATEGORILER[k], liste: haberler.filter(h => h.kategori === k), yol: `/kategori/${k}/`, aktif: k,
   aciklama: `${KATEGORILER[k]} haberleri: Türkiye ve dünyadan en son ${KATEGORILER[k].toLocaleLowerCase('tr')} gelişmeleri.`,
 });
@@ -554,8 +568,9 @@ async function derle() {
 
   await yaz('/', anaSayfa(haberler));
   await Promise.all(haberler.map(h => yaz(`/haber/${h.id}/`, haberSayfasi(h, haberler))));
-  await Promise.all(Object.keys(KATEGORILER).map(k => yaz(`/kategori/${k}/`, kategoriSayfasi(k, haberler))));
-  await yaz('/haberler/', listeSayfasi({ baslik: 'Son Haberler', liste: haberler, yol: '/haberler/', aciklama: 'Türkiye ve dünyadan en son haberler.' }));
+  const listeler = [...Object.keys(KATEGORILER).flatMap(k => kategoriSayfalari(k, haberler)),
+    ...listeSayfalari({ baslik: 'Son Haberler', liste: haberler, yol: '/haberler/', aciklama: 'Türkiye ve dünyadan en son haberler.' })];
+  await Promise.all(listeler.map(([yol, html]) => yaz(yol, html)));
   await yaz('/piyasalar/', piyasalarSayfasi());
   await yaz('/hakkimizda/', hakkimizda());
   await yaz('/404.html', bulunamadi());
@@ -566,7 +581,14 @@ async function derle() {
     b: h.baslik, s: h.spot, u: h.url, k: h.kategoriAd, t: h.tarih.toISOString(),
     g: h.gorsel ? u(`/gorseller/${h.gorsel.id}-480.webp`) : null, e: h.etiketler.join(' '),
   }))));
-  await yaz('/yardim.json', JSON.stringify(haberler.map(h => ({ id: h.id, baslik: h.baslik, spot: h.spot, govde: h.govde, kategori: h.kategoriAd, url: tamAdres(`/haber/${h.id}/`) }))));
+  // Soru Worker'ı için: küçük, önceden normalize edilmiş dizin ve haber başına metin dosyası.
+  const duz = t => t.toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
+  const kokler = t => [...new Set(duz(t).split(/[^\p{L}\p{N}]+/u).filter(x => x.length > 3).map(x => x.slice(0, 6)))].join(' ');
+  await yaz('/yardim-dizin.json', JSON.stringify({
+    son: haberler.slice(0, 12).map(h => ({ b: h.baslik, s: h.spot })),
+    d: haberler.map(h => [h.id, kokler(`${h.baslik} ${h.spot}`), kokler(h.govde.slice(0, 500))]),
+  }));
+  await Promise.all(haberler.map(h => yaz(`/yardim/${h.id}.json`, JSON.stringify({ baslik: h.baslik, spot: h.spot, govde: h.govde.slice(0, 3500) }))));
   console.log(`${haberler.length} haber, ${Object.keys(KATEGORILER).length} kategori derlendi (${Math.round(performance.now() - baslangic)} ms)`);
 }
 

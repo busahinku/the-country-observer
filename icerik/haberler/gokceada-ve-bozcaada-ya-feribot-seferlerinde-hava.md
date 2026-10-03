@@ -1,0 +1,14 @@
+---
+baslik: Gökçeada ve Bozcaada’ya feribot seferlerinde hava engeli
+spot: GESTAŞ, olumsuz hava nedeniyle Kabatepe-Gökçeada ve Geyikli-Bozcaada hatlarında yalnızca belirli seferlerin yapılacağını, diğer tüm seferlerin iptal edildiğini duyurdu.
+kategori: gundem
+yazar: Haber Merkezi
+tarih: 2026-10-02T01:41:23.000Z
+etiketler: []
+gorsel_sorgu: Bozcaada ferry
+gorsel_aciklama: Arşiv fotoğrafı.
+kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/gundem/bozcaada-ve-gokceada-hatlarindaki-bazi-feribot-seferleri-yarin-yapilamayacak/4076240"},{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/turkiye/bozcaada-ve-gokceada-feribot-seferlerine-hava-engeli-958933.html"}]
+---
+Çanakkale’de adalara ulaşımı sağlayan GESTAŞ, olumsuz hava koşulları nedeniyle feribot seferlerinde değişikliğe gitti.
+
+Kabatepe-Gökçeada hattında yalnızca Kabatepe’den 13.00 ve 17.00, Gökçeada’dan 11.00 ve 15.00 seferleri yapılacak. Geyikli-Bozcaada hattında ise Geyikli’den 14.00, 16.00, 18.00, 20.00 ve 23.00, Bozcaada’dan 13.00, 15.00, 17.00, 19.00 ve 22.00 seferleri gerçekleşecek. Tarifedeki diğer tüm seferler iptal edildi.

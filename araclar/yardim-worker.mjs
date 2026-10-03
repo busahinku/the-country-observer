@@ -122,6 +122,17 @@ Kurallar:
 - Doğal bir gazeteci diliyle yaz. "Haber metinlerinde", "verilen metinlere göre", "bağlamda" gibi kalıplar kullanma; gerekirse "haberimize göre" de.
 - Soruya doğrudan cevapla başla, soruyu tekrar etme.`;
 
+// Dizin her istekte yeniden işlenmesin diye Worker belleğinde 5 dakika tutulur.
+let dizinOnbellek = null, dizinZamani = 0;
+async function dizinAl(site) {
+  if (dizinOnbellek && Date.now() - dizinZamani < 300000) return dizinOnbellek;
+  const y = await fetch(`${site}/yardim-dizin.json`, { cf: { cacheTtl: 300, cacheEverything: true }, signal: AbortSignal.timeout(5000) });
+  if (!y.ok) throw Error('dizin');
+  dizinOnbellek = await y.json();
+  dizinZamani = Date.now();
+  return dizinOnbellek;
+}
+
 async function sor(istek, env, origin, site) {
   if (!env.AI || !env.SORU_SINIRI || !env.TOPLAM_SINIR) return json({ hata: 'Soru hizmeti şu anda kapalı.' }, 503, origin);
   if (Number(istek.headers.get('content-length') || 0) > 1200) return json({ hata: 'Soru çok uzun.' }, 413, origin);
@@ -135,25 +146,27 @@ async function sor(istek, env, origin, site) {
   if (soru.length < 3 || soru.length > 300) return json({ hata: 'Sorunuz 3 ile 300 karakter arasında olmalı.' }, 400, origin);
   if (ENGELLI.test(soru)) return json({ hata: 'Yalnızca gazetemizdeki haberler hakkında yardımcı olabilirim.' }, 400, origin);
 
-  let arsiv;
-  try {
-    const a = await fetch(`${site}/yardim.json`, { cf: { cacheTtl: 300, cacheEverything: true }, signal: AbortSignal.timeout(5000) });
-    if (!a.ok) throw Error();
-    arsiv = await a.json();
-  } catch { return json({ hata: 'Haber arşivine şu anda ulaşılamadı.' }, 503, origin); }
-
-  const kelimeler = sozcukler(soru);
-  const puanli = arsiv.map(h => {
-    const ad = duz(`${h.baslik} ${h.spot}`), govde = duz(h.govde);
-    return { ...h, puan: (h.id === haberId ? 10 : 0) + kelimeler.reduce((n, k) => n + (ad.includes(k) ? 3 : govde.includes(k) ? 1 : 0), 0) };
-  }).sort((a, b) => b.puan - a.puan);
-  // Eşleşme yoksa (ör. "bugün gündemde ne var?") en yeni haberlerin özetleri bağlam olur.
+  let dizin;
+  try { dizin = await dizinAl(site); } catch { return json({ hata: 'Haber arşivine şu anda ulaşılamadı.' }, 503, origin); }
+  const kelimeler = sozcukler(soru).map(k => k.slice(0, 6));
+  const puanli = dizin.d.map(([id, ad, govde]) => {
+    let puan = id === haberId ? 10 : 0;
+    for (const k of kelimeler) puan += ad.includes(k) ? 3 : govde.includes(k) ? 1 : 0;
+    return { id, puan };
+  }).filter(h => h.puan > 0).sort((a, b) => b.puan - a.puan);
   const enIyi = puanli[0]?.puan || 0;
-  const eslesen = puanli.filter(h => h.puan > 0 && h.puan >= Math.max(2, enIyi * 0.5)).slice(0, 3);
-  const baglam = eslesen.length
-    ? eslesen.map((h, i) => `[Haber ${i + 1}] ${h.baslik}\n${h.spot}\n${h.govde.slice(0, 3500)}`).join('\n\n')
-    : arsiv.slice(0, 12).map((h, i) => `[Haber ${i + 1}] ${h.baslik}: ${h.spot}`).join('\n');
-  const kaynaklar = (eslesen.length ? eslesen : []).map(h => ({ baslik: h.baslik, url: `${site}/haber/${h.id}/` }));
+  const secilen = puanli.filter(h => h.puan >= Math.max(2, enIyi * 0.5)).slice(0, 3);
+  // Eşleşme yoksa (ör. "bugün gündemde ne var?") en yeni haberlerin özetleri bağlam olur.
+  const metinler = (await Promise.all(secilen.map(async h => {
+    try {
+      const y = await fetch(`${site}/yardim/${h.id}.json`, { cf: { cacheTtl: 600, cacheEverything: true }, signal: AbortSignal.timeout(4000) });
+      return y.ok ? { id: h.id, ...(await y.json()) } : null;
+    } catch { return null; }
+  }))).filter(Boolean);
+  const baglam = metinler.length
+    ? metinler.map((h, i) => `[Haber ${i + 1}] ${h.baslik}\n${h.spot}\n${h.govde}`).join('\n\n')
+    : dizin.son.map((h, i) => `[Haber ${i + 1}] ${h.b}: ${h.s}`).join('\n');
+  const kaynaklar = metinler.map(h => ({ baslik: h.baslik, url: `${site}/haber/${h.id}/` }));
 
   let akis;
   try {

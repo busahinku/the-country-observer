@@ -1,0 +1,14 @@
+---
+baslik: Geleneksel Türk okçuluğunda Federasyon Kupası Gaziantep’te
+spot: 15 ilden 80 sporcunun katılacağı iki günlük organizasyon, deve kuşu yumurtasına atışla tamamlanacak.
+kategori: spor
+yazar: Spor Servisi
+tarih: 2026-10-02T09:29:03.000Z
+etiketler: []
+gorsel_sorgu: traditional Turkish archery
+gorsel_aciklama: Arşiv fotoğrafı.
+kaynaklar: [{"ad":"Anadolu Ajansı","url":"https://www.aa.com.tr/tr/spor/geleneksel-turk-okculugunda-federasyon-kupasi-gaziantepte-yapilacak/4075921"}]
+---
+Geleneksel Türk Okçuluğu Federasyon Kupası Gaziantep’te düzenlenecek. Federasyonun açıklamasına göre kadınlar ve erkekler kategorilerinde 15 ilden 80 sporcu yarışacak.
+
+Sporcular hareketli puta müsabakasında 30, 45, 60, 75 ve 90 metreye, sabit puta müsabakasında 50 metreye ok atacak. Organizasyon sıralama, eleme, yarı final ve final atışlarının ardından geleneksel deve kuşu yumurtasına atışla tamamlanacak.

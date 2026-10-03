@@ -10,6 +10,8 @@ const UA = 'TheCountryObserver/1.0 (https://github.com/busahinku/the-country-obs
 const KUNYE = 'icerik/gorseller.json';
 const HEDEF = 'statik/gorseller';
 const ACIK_LISANS = /^(cc[ -]?by|cc0|public domain|pd|by|by-sa|cc-by|cc-by-sa|cc0|pdm)/i;
+// Konuya özel görsel bulunamazsa kategoriye uygun genel bir fotoğraf aranır (künyede "Arşiv fotoğrafı" yazar).
+const KATEGORI_YEDEK = { gundem: 'Istanbul street', politika: 'Grand National Assembly of Turkey', ekonomi: 'Istanbul Levent skyline', dunya: 'United Nations General Assembly hall', spor: 'football stadium Turkey', teknoloji: 'technology circuit board', 'kultur-sanat': 'theatre stage', yasam: 'Istanbul people street', saglik: 'hospital corridor', analiz: 'newspaper reading' };
 const temiz = s => (s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
 async function commonsAra(sorgu, kesinDosya) {
@@ -61,7 +63,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const { bilgi } = onBilgiCoz(await readFile(`icerik/haberler/${d}`, 'utf8'));
     const sorgu = bilgi.gorsel_sorgu || bilgi.baslik;
     try {
-      const bulunan = (bilgi.gorsel_dosya && await commonsAra(null, bilgi.gorsel_dosya)) || await commonsAra(sorgu) || await openverseAra(sorgu);
+      const yedek = KATEGORI_YEDEK[bilgi.kategori];
+      const bulunan = (bilgi.gorsel_dosya && await commonsAra(null, bilgi.gorsel_dosya)) || await commonsAra(sorgu)
+        || await openverseAra(sorgu).catch(() => null) || (yedek && await commonsAra(yedek));
       if (!bulunan) { console.log(`✗ ${id}: görsel bulunamadı (${sorgu})`); continue; }
       const gecici = `.onbellek/${id}.jpg`;
       await mkdir('.onbellek', { recursive: true });

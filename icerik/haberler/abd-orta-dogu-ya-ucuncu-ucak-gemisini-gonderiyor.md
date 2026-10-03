@@ -1,0 +1,24 @@
+---
+baslik: İran savaşı uzarken ABD, Orta Doğu’ya üçüncü uçak gemisini gönderiyor
+spot: USS Theodore Roosevelt görev gücü ve USS Makin Island amfibi grubu bölgeye doğru yola çıktı. Ekim sonunda bölgede üç ABD uçak gemisi bulunabilecek; Trump ise kasım ara seçimlerinden sonra saldırıları artırabileceğini söyledi.
+kategori: dunya
+yazar: Dış Haberler Servisi
+tarih: 2026-10-02T06:49:00+03:00
+etiketler: ["ABD","İran","Uçak gemisi","Orta Doğu"]
+gorsel_sorgu: USS Theodore Roosevelt aircraft carrier
+gorsel_aciklama: USS Theodore Roosevelt uçak gemisi. Arşiv fotoğrafı.
+kaynaklar: [{"ad":"TRT Haber","url":"https://www.trthaber.com/haber/dunya/iran-savasi-cikmaza-girerken-abd-orta-doguya-ucuncu-ucak-gemisini-gonderdi-958844.html"},{"ad":"Hürriyet","url":"https://www.hurriyet.com.tr/dunya/abd-orta-doguya-bir-ucak-gemisi-daha-gonderecek-43326486"}]
+---
+ABD, İran’la süren savaşın birkaç haftada biteceği yönündeki ilk beklentilerin aksine bölgedeki deniz gücünü artırıyor. Orta Doğu’ya doğru yola çıkan filo, USS Theodore Roosevelt uçak gemisi görev gücü ile iki çıkarma gemisine sahip USS Makin Island amfibi grubundan oluşuyor. Filoda 7 binden fazla denizci ve 2 bin deniz piyadesi bulunuyor.
+
+Bir ABD’li yetkili, bu adımla ekim sonuna kadar bölgede üç ABD uçak gemisinin aynı anda bulunabileceğini söyledi. Hâlihazırda USS George H. W. Bush ve USS George Washington uçak gemileri ile USS Boxer amfibi hazır grubu bölgede görev yapıyor. Yeni gelenlerle birlikte ABD’nin bölgedeki deniz gücü 20 binden fazla denizci ve deniz piyadesi ile yüzlerce uçağa ulaşacak.
+
+## George Washington Japonya’ya dönebilir
+
+Normalde Pasifik’te görev yapan USS George Washington, aralıksız 260 gün denizde kalan USS Abraham Lincoln’ün yerini almak için bölgeye kaydırılmıştı. Theodore Roosevelt’in bölgeye ulaşmasıyla George Washington’ın Japonya açıklarına dönebileceği belirtiliyor.
+
+## Trump: Ara seçimden sonra bombardıman artabilir
+
+ABD Başkanı Donald Trump, Time dergisine verdiği röportajda 3 Kasım’daki ara seçimlerin ardından İran’a yönelik bombardımanı artırmasının mümkün olduğunu söyledi. Stratejisinin ayrıntısını vermeyen Trump, İran’ın son ateşkes teklifini yeterli bulmadığı için reddettiğini açıkladı.
+
+İsrail basınında yer alan haberlerde de kararın, Trump’ın ara seçimlerin ardından İran’a yeniden saldırı düzenleme tehdidinin ardından alındığı ileri sürüldü.
